@@ -37,6 +37,17 @@ CREATE TABLE IF NOT EXISTS visiteur (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS comptable (
+  id char(5) NOT NULL,
+  nom char(30) DEFAULT NULL,
+  prenom char(30)  DEFAULT NULL, 
+  login char(20) DEFAULT NULL,
+  mdp char(20) DEFAULT NULL,
+  dateembauche date DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+
 CREATE TABLE IF NOT EXISTS fichefrais (
   idvisiteur char(5) NOT NULL,
   mois char(6) NOT NULL,

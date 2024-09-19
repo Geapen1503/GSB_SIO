@@ -101,7 +101,34 @@ class PdoGsb
         $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMdp', $mdp, PDO::PARAM_STR);
         $requetePrepare->execute();
-        return $requetePrepare->fetch();
+
+        $result = $requetePrepare->fetch();
+        return $result ? $result : [];
+    }
+
+    
+    /**
+     * Retourne les informations d'un comptable
+     * 
+     * @param String $login login du visiteur
+     * @param String $mdp Mot de passe du visiteur
+     * 
+     * @return l'id, le nom et le prénom sous la forme d'un tableau associatif
+     */
+    public function getInfosComptable($login, $mdp): array
+    {
+        $requetePrepare = $this->connexion->prepare(
+            'SELECT comptable.id AS id, comptable.nom AS nom, '
+            . 'comptable.prenom AS prenom '
+            . 'FROM comptable '
+            . 'WHERE comptable.login = :unLogin AND comptable.mdp = :unMdp'
+        );
+        $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMdp', $mdp, PDO::PARAM_STR);
+        $requetePrepare->execute();
+
+        $result = $requetePrepare->fetch();
+        return $result ? $result : [];
     }
 
     /**
