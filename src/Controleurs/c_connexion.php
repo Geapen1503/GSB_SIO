@@ -32,9 +32,7 @@ switch ($action) {
 
         $visiteur = $pdo->getInfosVisiteur($login, $mdp);
 
-        if (!$visiteur) {
-            $comptable = $pdo->getInfosComptable($login, $mdp);
-        }
+        if (!$visiteur) $comptable = $pdo->getInfosComptable($login, $mdp);
 
         if (!$visiteur && !$comptable) {
             Utilitaires::ajouterErreur('Login ou mot de passe incorrect');
@@ -45,13 +43,15 @@ switch ($action) {
             $nom = $visiteur['nom'];
             $prenom = $visiteur['prenom'];
             Utilitaires::connecter($id, $nom, $prenom);
+            $_SESSION['typeUtilisateur'] = 'visiteur';
             header('Location: index.php?uc=accueil');
         } elseif ($comptable) {
             $id = $comptable['id'];
             $nom = $comptable['nom'];
             $prenom = $comptable['prenom'];
             Utilitaires::connecter($id, $nom, $prenom);
-            header('Location: index.php?uc=accueilComptable');
+            $_SESSION['typeUtilisateur'] = 'comptable';
+            header('Location: index.php?uc=accueil');
         }
         break;
     default:
