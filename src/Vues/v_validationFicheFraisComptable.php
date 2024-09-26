@@ -66,20 +66,19 @@
     </style>
 </head>
 <body>
-<div class="header">
-    <img src="logo.png" alt="Logo GSB">
-    <div>
-        <label for="visiteur">Choisir le visiteur:</label>
-        <select name="visiteur" id="visiteur">
-            <option value="villechalane">Villechalane Louis</option>
-            <!-- Add other visitors if needed -->
-        </select>
-        <label for="mois">Mois:</label>
-        <select name="mois" id="mois">
-            <option value="08/2022">08/2022</option>
-            <!-- Add other months if needed -->
-        </select>
-    </div>
+
+
+<div class="visiteur-choice-section">
+    <label for="visiteur">Choisir le visiteur:</label>
+    <select name="visiteur" id="visiteur">
+        <option value="villechalane">Villechalane Louis</option>
+
+    </select>
+    <label for="mois">Mois:</label>
+    <select name="mois" id="mois">
+        <option value="08/2022">08/2022</option>
+
+    </select>
 </div>
 
 <div class="form-section">

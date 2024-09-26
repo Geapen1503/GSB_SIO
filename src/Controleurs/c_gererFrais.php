@@ -24,8 +24,12 @@ $numMois = substr($mois, 4, 2);
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 switch ($action) {
     case 'saisirFrais':
-        if ($pdo->estPremierFraisMois($idVisiteur, $mois)) {
-            $pdo->creeNouvellesLignesFrais($idVisiteur, $mois);
+        if ($_SESSION['typeUtilisateur'] == 'visiteur') {
+            if ($pdo->estPremierFraisMois($idVisiteur, $mois)) {
+                $pdo->creeNouvellesLignesFrais($idVisiteur, $mois);
+            }
+        } elseif($_SESSION['typeUtilisateur'] == 'comptable') {
+            require PATH_VIEWS . 'v_validationFicheFraisComptable.php';
         }
         break;
     case 'validerMajFraisForfait':
@@ -57,5 +61,8 @@ switch ($action) {
 }
 $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $mois);
 $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
-require PATH_VIEWS . 'v_listeFraisForfait.php';
-require PATH_VIEWS . 'v_listeFraisHorsForfait.php';
+
+if ($_SESSION['typeUtilisateur'] == 'visiteur') {
+    require PATH_VIEWS . 'v_listeFraisForfait.php';
+    require PATH_VIEWS . 'v_listeFraisHorsForfait.php';
+}
