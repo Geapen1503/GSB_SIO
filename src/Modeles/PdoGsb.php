@@ -131,13 +131,37 @@ class PdoGsb
         return $result ? $result : [];
     }
 
-    public function getAllVisiteur()
+
+    /**
+     * Retourne les nom, prenom et login de tous les visiteurs
+     *
+     * @return array|false
+     */
+    public function getAllVisiteurs()
     {
-        $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom FROM visiteur');
+        $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom, visiteur.login FROM visiteur');
         $requetePrepare->execute();
 
         $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    /**
+     * retourne l'id d'un visiteur grâce à son login
+     *
+     * @param $loginVisiteur
+     * @return array|false
+     */
+    public function getVisiteurId($loginVisiteur) {
+        $requetePrepare = $this->connexion->prepare('SELECT visiteur.id FROM visiteur WHERE ', $loginVisiteur);
+        $requetePrepare->execute();
+
+        $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function getLigneFraisHorsForfait($idUserHorsForfait) {
+
     }
 
     /**

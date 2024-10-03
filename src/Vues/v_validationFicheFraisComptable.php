@@ -5,7 +5,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHP.php to edit this template
  */
 
-$visiteurs = $pdo->getAllVisiteur();
+$visiteurs = $pdo->getAllVisiteurs();
 
 ?>
 
@@ -74,8 +74,8 @@ $visiteurs = $pdo->getAllVisiteur();
     <label for="visiteur">Choisir le visiteur:</label>
     <select name="visiteur" id="visiteur">
         <?php foreach ($visiteurs as $visiteur): ?>
-            <option value="<?= htmlspecialchars($visiteur['nom'] . ' ' . $visiteur['prenom']) ?>">
-                <?= htmlspecialchars($visiteur['nom'] . ' ' . $visiteur['prenom']) ?>
+            <option value="<?= htmlspecialchars($visiteur['login']) ?>">
+                <?= htmlspecialchars($visiteur['login']) ?>
             </option>
         <?php endforeach; ?>
 
@@ -98,22 +98,21 @@ $visiteurs = $pdo->getAllVisiteur();
             $first_month = 1;
         }
 
-        //$today_date = date('m') + date('y');
-
         foreach ($dates as $date) {
+            $dateEntree = $date;
+            list($mois, $annee) = explode("/", $dateEntree);
+            $moisActuel = date('m');
+            $anneeActuelle = date('Y');
 
-           // if ($date == $today_date) echo $options = '<option value="date" selected>', $date, '</option>';
-            //else echo $options = '<option value="date">', $date, '</option>';
-
-            echo $options = '<option value="date">', $date, '</option>';
+            if ($mois >= 1 && $mois <= 12 && $mois == $moisActuel && $annee == $anneeActuelle) echo $options = '<option value="date" selected>', $date, '</option>';
+            else echo $options = '<option value="date">', $date, '</option>';
         }
-
         ?>
 
 
     </select>
 </div>
-
+<!--
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
     <div class="forfait-section">
@@ -135,7 +134,7 @@ $visiteurs = $pdo->getAllVisiteur();
             <input type="reset" value="Réinitialiser">
         </div>
     </div>
-</div>
+</div> -->
 
 <div class="table-section">
     <h3>Descriptif des éléments hors forfait</h3>
@@ -149,15 +148,26 @@ $visiteurs = $pdo->getAllVisiteur();
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td><input type="text" value="12/08/2022"></td>
-            <td><input type="text" value="Achat de fleurs"></td>
-            <td><input type="number" value="29.90"></td>
-            <td>
-                <input type="submit" value="Corriger">
-                <input type="reset" value="Réinitialiser">
-            </td>
-        </tr>
+
+        <?php
+
+
+
+        echo '
+            <tr>
+                <td><input type="text" value="14/08/2022"></td>
+                <td><input type="text" value="Taxi"></td>
+                <td><input type="number" value="32.50"></td>
+                <td>
+                    <input type="submit" value="Corriger">
+                    <input type="reset" value="Réinitialiser">
+                </td>
+            </tr>
+        ';
+
+        ?>
+
+        <!--
         <tr>
             <td><input type="text" value="14/08/2022"></td>
             <td><input type="text" value="Taxi"></td>
@@ -167,6 +177,7 @@ $visiteurs = $pdo->getAllVisiteur();
                 <input type="reset" value="Réinitialiser">
             </td>
         </tr>
+        -->
         </tbody>
     </table>
 

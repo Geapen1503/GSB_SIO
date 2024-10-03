@@ -4100,8 +4100,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   background-color: #337ab7;
 }
 .nav-pills2 > li {
+  display: flex;
+  flex-direction: row;
   float: left;
 }
+
 .nav-pills2 > li > a {
   border-radius: 4px;
 }
