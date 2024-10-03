@@ -74,12 +74,17 @@ $visiteurs = $pdo->getAllVisiteurs();
     <label for="visiteur">Choisir le visiteur:</label>
     <select name="visiteur" id="visiteur">
         <?php foreach ($visiteurs as $visiteur): ?>
-            <option value="<?= htmlspecialchars($visiteur['login']) ?>">
+            <option class="userLoginOption" value="<?= htmlspecialchars($visiteur['login']) ?>">
                 <?= htmlspecialchars($visiteur['login']) ?>
             </option>
         <?php endforeach; ?>
 
     </select>
+
+    <?php
+    $visiteurName = $_POST['userLoginOption'];
+    ?>
+
     <label for="mois">Mois:</label>
     <select name="mois" id="mois">
 
