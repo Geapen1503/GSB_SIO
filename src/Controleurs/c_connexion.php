@@ -32,7 +32,7 @@ switch ($action) {
 
         $visiteur = $pdo->getInfosVisiteur($login, $mdp);
 
-        if (!$visiteur) $comptable = $pdo->getInfosComptable($login, $mdp);
+        if (!$visiteur) { $comptable = $pdo->getInfosComptable($login, $mdp); }
 
         if (!$visiteur && !$comptable) {
             Utilitaires::ajouterErreur('Login ou mot de passe incorrect');
