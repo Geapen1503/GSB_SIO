@@ -131,6 +131,15 @@ class PdoGsb
         return $result ? $result : [];
     }
 
+    public function getAllVisiteur()
+    {
+        $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom FROM visiteur');
+        $requetePrepare->execute();
+
+        $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
     /**
      * Retourne sous forme d'un tableau associatif toutes les lignes de frais
      * hors forfait concernées par les deux arguments.
