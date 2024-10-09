@@ -9,65 +9,14 @@ $visiteurs = $pdo->getAllVisiteur();
 
 ?>
 
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
+<head>-->
+<!--    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valider la fiche de frais</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .header, .validation-section {
-            margin: 20px 0;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header img {
-            width: 100px;
-        }
-        .form-section, .table-section {
-            margin-top: 20px;
-        }
-        label {
-            margin-right: 10px;
-        }
-        input[type="text"], input[type="number"], select {
-            padding: 5px;
-            margin: 5px 0;
-        }
-        .forfait-section input[type="number"] {
-            width: 100px;
-        }
-        .action-buttons {
-            margin-top: 20px;
-        }
-        .action-buttons input {
-            padding: 10px 20px;
-            margin-right: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .table-section input[type="text"], .table-section input[type="number"] {
-            width: 100%;
-        }
-    </style>
 </head>
-<body>
+<body>-->
 
 
 <div class="visiteur-choice-section">
@@ -113,9 +62,38 @@ $visiteurs = $pdo->getAllVisiteur();
 
     </select>
 </div>
-
-<div class="form-section">
-    <h2>Valider la fiche de frais</h2>
+<div class="row">    
+    <h2 class="orgcomptable">Valider la fiche de frais</h2>
+    <h3>Eléments forfaitisés</h3>
+    <div class="col-md-4">
+        <form method="post" 
+              action="index.php?uc=gererFrais&action=validerMajFraisForfait" 
+              role="form">
+            <fieldset>       
+                <?php
+                foreach ($lesFraisForfait as $unFrais) {
+                    $idFrais = $unFrais['idfrais'];
+                    $libelle = htmlspecialchars($unFrais['libelle']);
+                    $quantite = $unFrais['quantite']; ?>
+                    <div class="form-group">
+                        <label for="idFrais"><?php echo $libelle ?></label>
+                        <input type="text" id="idFrais" 
+                               name="lesFrais[<?php echo $idFrais ?>]"
+                               size="10" maxlength="5" 
+                               value="<?php echo $quantite ?>" 
+                               class="form-control">
+                    </div>
+                    <?php
+                }
+                ?>
+                <button class="btn btn-success" type="submit">Corriger</button>
+                <button class="btn btn-danger" type="reset">Réinitialiser</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<!--<div class="form-section">
+    <h2 class="orgcomptable">Valider la fiche de frais</h2>
     <div class="forfait-section">
         <h3>Éléments forfaitisés</h3>
         <label for="etape">Forfait Étape:</label>
@@ -135,7 +113,7 @@ $visiteurs = $pdo->getAllVisiteur();
             <input type="reset" value="Réinitialiser">
         </div>
     </div>
-</div>
+</div>-->
 
 <div class="table-section">
     <h3>Descriptif des éléments hors forfait</h3>
