@@ -5,7 +5,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHP.php to edit this template
  */
 
-$visiteurs = $pdo->getAllVisiteurs();
+//$visiteurs = $pdo->getAllVisiteurs();
 
 ?>
 
@@ -73,12 +73,12 @@ $visiteurs = $pdo->getAllVisiteurs();
     <form method="POST" action="">
         <div class="visiteur-choice-section">
             <label for="visiteur">Choisir le visiteur:</label>
-            <select name="visiteur" id="visiteur">
-                <?php foreach ($visiteurs as $visiteur): ?>
+            <select name="visiteur" id="visiteur"> <!--
+                <?php /*foreach ($visiteurs as $visiteur): ?>
                     <option value="<?= htmlspecialchars($visiteur['login']) ?>">
                         <?= htmlspecialchars($visiteur['login']) ?>
                     </option>
-                <?php endforeach; ?>
+                <?php endforeach;*/ ?> -->
             </select>
             <button type="submit">Envoyer</button>
         </div>
@@ -92,29 +92,7 @@ $visiteurs = $pdo->getAllVisiteurs();
     <select name="mois" id="mois">
 
         <?php
-        $first_year = 2010;
-        $first_month = 1;
-        $nb_years = date('Y') - 2009;
-
-        $dates = [];
-
-        for ($year = $first_year; $year < $first_year + $nb_years; $year++) {
-            for ($mois = $first_month; $mois <= 12; $mois++) {
-                $date = str_pad($mois, 2, '0', STR_PAD_LEFT) . '/' . $year;
-                $dates[] = $date;
-            }
-            $first_month = 1;
-        }
-
-        foreach ($dates as $date) {
-            $dateEntree = $date;
-            list($mois, $annee) = explode("/", $dateEntree);
-            $moisActuel = date('m');
-            $anneeActuelle = date('Y');
-
-            if ($mois >= 1 && $mois <= 12 && $mois == $moisActuel && $annee == $anneeActuelle) echo $options = '<option value="date" selected>', $date, '</option>';
-            else echo $options = '<option value="date">', $date, '</option>';
-        }
+        // geoffrey date php selector here
         ?>
 
 
@@ -123,9 +101,6 @@ $visiteurs = $pdo->getAllVisiteurs();
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
     <div class="row">
-        <h2>Renseigner ma fiche de frais du mois
-            <?php echo $numMois . '-' . $numAnnee ?>
-        </h2>
         <h3>Eléments forfaitisés</h3>
         <div class="col-md-4">
             <form method="post"
@@ -135,8 +110,8 @@ $visiteurs = $pdo->getAllVisiteurs();
                     <?php
                     $idVisiteur = 'a118y';
 
-                    list($mois, $annee) = explode("/", $date);
-                    $leMois = $annee . str_pad($mois, 2, '0', STR_PAD_LEFT);
+                    //list($mois, $annee) = explode("/", $date);
+                    //$leMois = $annee . str_pad($mois, 2, '0', STR_PAD_LEFT);
 
                     $dateUnformat = '03/10/2023'; // replace with geoffrey date selector system
                     echo $newDate = \Outils\Utilitaires::getMois($dateUnformat);
@@ -165,6 +140,48 @@ $visiteurs = $pdo->getAllVisiteurs();
                 </fieldset>
             </form>
         </div>
+    </div>
+</div>
+
+<div class="row">
+    <h3>Descriptif des éléments hors forfait</h3>
+    <div class="col-md-4">
+        <form action="index.php?uc=gererFrais&action=validerCreationFrais"
+              method="post" role="form">
+
+            <?php
+            $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $newDate);
+
+            foreach ($lesFraisHorsForfait as $unHorsFrais) {
+                $dateHorsFrais = $unHorsFrais['date'];
+                $horsLibelle = htmlspecialchars($unHorsFrais['libelle']);
+                $horsMontant = $unHorsFrais['montant'];
+            ?>
+
+            <div class="form-group">
+                <label for="txtDateHF">Date (jj/mm/aaaa): </label>
+                <input type="date" id="txtDateHF" name="dateFrais"
+                       class="form-control" id="text" value="<?php echo $dateHorsFrais; ?>">
+            </div>
+            <div class="form-group">
+                <label for="txtLibelleHF">Libellé</label>
+                <input type="text" id="txtLibelleHF" name="libelle" class="form-control" id="text" value="<?php echo $horsLibelle; ?>">
+            </div>
+            <div class="form-group">
+                <label for="txtMontantHF">Montant : </label>
+                <div class="input-group">
+                    <span class="input-group-addon">€</span>
+                    <input type="text" id="txtMontantHF" name="montant" class="form-control" value="<?php echo $horsMontant; ?>">
+                </div>
+            </div>
+
+            <?php
+            }
+            ?>
+
+            <button class="btn btn-success" type="submit">Corriger</button>
+            <button class="btn btn-danger" type="reset">Réinitialiser</button>
+        </form>
     </div>
 </div>
 
