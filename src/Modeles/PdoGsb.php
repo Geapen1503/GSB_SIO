@@ -514,4 +514,21 @@ class PdoGsb
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
+    
+    public function getMoisFichesCloturees($idVisiteur) {
+    
+    $requetePrepare = $this->connexion->prepare(
+           'SELECT fichefrais.mois '
+        .   ' FROM fichefrais '
+        .   ' INNER JOIN visiteur ON fichefrais.idVisiteur = visiteur.id '
+        .   ' INNER JOIN etat ON fichefrais.idEtat = etat.id '
+        .   ' WHERE visiteur.id = :unIdVisiteur '
+        .   ' AND etat.id = "CL" '
+        .   ' ORDER BY fichefrais.mois' 
+    );
+    $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
+    $requetePrepare->execute();
+    $moisClotures = $requetePrepare->fetchAll(PDO::FETCH_COLUMN);
+    return $moisClotures;
+}
 }
