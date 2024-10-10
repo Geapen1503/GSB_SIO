@@ -82,7 +82,7 @@ $visiteurs = $pdo->getAllVisiteurs();
     </select>
 
     <?php
-    $visiteurName = $_POST['userLoginOption'];
+        if (isset($_POST['visiteur'])) $visiteurName = $_POST['visiteur'];
     ?>
 
     <label for="mois">Mois:</label>
@@ -117,29 +117,43 @@ $visiteurs = $pdo->getAllVisiteurs();
 
     </select>
 </div>
-<!--
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
-    <div class="forfait-section">
-        <h3>Éléments forfaitisés</h3>
-        <label for="etape">Forfait Étape:</label>
-        <input type="number" id="etape" name="etape" value="12">
-
-        <label for="kilometrique">Frais Kilométrique:</label>
-        <input type="number" id="kilometrique" name="kilometrique" value="562">
-
-        <label for="hotel">Nuitée Hôtel:</label>
-        <input type="number" id="hotel" name="hotel" value="6">
-
-        <label for="restaurant">Repas Restaurant:</label>
-        <input type="number" id="restaurant" name="restaurant" value="25">
-
-        <div class="action-buttons">
-            <input type="submit" value="Corriger">
-            <input type="reset" value="Réinitialiser">
+    <div class="row">
+        <h2>Renseigner ma fiche de frais du mois
+            <?php echo $numMois . '-' . $numAnnee ?>
+        </h2>
+        <h3>Eléments forfaitisés</h3>
+        <div class="col-md-4">
+            <form method="post"
+                  action="index.php?uc=gererFrais&action=validerMajFraisForfait"
+                  role="form">
+                <fieldset>
+                    <?php
+                    /*
+                    foreach ($lesFraisForfait as $unFrais) {
+                        $idFrais = $unFrais['idfrais'];
+                        $libelle = htmlspecialchars($unFrais['libelle']);
+                        $quantite = $unFrais['quantite'];*/
+                    ?>
+                        <div class="form-group">
+                            <label for="idFrais"><?php /*echo $libelle*/ ?></label>
+                            <input type="text" id="idFrais"
+                                   name="lesFrais[<?php /*echo $idFrais*/ ?>]"
+                                   size="10" maxlength="5"
+                                   value="<?php /*echo $quantite*/ ?>"
+                                   class="form-control">
+                        </div>
+                        <?php
+                    //}
+                    ?>
+                    <button class="btn btn-success" type="submit">Ajouter</button>
+                    <button class="btn btn-danger" type="reset">Effacer</button>
+                </fieldset>
+            </form>
         </div>
     </div>
-</div> -->
+</div>
 
 <div class="table-section">
     <h3>Descriptif des éléments hors forfait</h3>
