@@ -5,7 +5,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHP.php to edit this template
  */
 
-//$visiteurs = $pdo->getAllVisiteurs();
+use Modeles\PdoGsb;
+
+$pdo = PdoGsb::getPdoGsb();
+$visiteurs = $pdo->getAllVisiteur();
+
 
 ?>
 
@@ -70,33 +74,41 @@
 <body>
 
 
-    <form method="POST" action="">
-        <div class="visiteur-choice-section">
-            <label for="visiteur">Choisir le visiteur:</label>
-            <select name="visiteur" id="visiteur"> <!--
-                <?php /*foreach ($visiteurs as $visiteur): ?>
-                    <option value="<?= htmlspecialchars($visiteur['login']) ?>">
-                        <?= htmlspecialchars($visiteur['login']) ?>
-                    </option>
-                <?php endforeach;*/ ?> -->
-            </select>
-            <button type="submit">Envoyer</button>
-        </div>
-    </form>
+<form method="POST" action="">
+    <div class="visiteur-choice-section">
+        <label for="visiteur">Choisir le visiteur :</label>
+        <input list="visiteurs" name="visiteur" id="visiteur" placeholder="Taper pour rechercher...">
+        <datalist id="visiteurs">
+            <?php foreach ($visiteurs as $visiteur): ?>
+                <option value="<?= htmlspecialchars($visiteur['login']) ?>">
+                    <?= htmlspecialchars($visiteur['login']) ?>
+                </option>
+            <?php endforeach; ?>
+        </datalist>
+    </div>
+    <button type="submit">Valider</button>
+</form>
 
-    <?php
-        if (isset($_POST['visiteur'])) $visiteurLogin = $_POST['visiteur'];
-    ?>
+<?php
+if (isset($_POST['visiteur'])) {
+    $visiteurLogin = $_POST['visiteur'];
+    echo "Le visiteur sélectionné est : " . htmlspecialchars($visiteurLogin);
+}
+?>
 
-    <label for="mois">Mois:</label>
+
+<label for="mois">Mois:</label>
     <select name="mois" id="mois">
 
         <?php
-        // geoffrey date php selector here
+        $visiteurId = $pdo->getVisiteurId(htmlspecialchars($visiteurLogin));
+        $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
+
+
         ?>
 
-
     </select>
+
 </div>
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
@@ -108,7 +120,7 @@
                   role="form">
                 <fieldset>
                     <?php
-                    $idVisiteur = 'a118y';
+                    $idVisiteur = $visiteurId;
 
                     //list($mois, $annee) = explode("/", $date);
                     //$leMois = $annee . str_pad($mois, 2, '0', STR_PAD_LEFT);

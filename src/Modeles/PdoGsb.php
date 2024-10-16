@@ -106,7 +106,7 @@ class PdoGsb
         return $result ? $result : [];
     }
 
-    
+
     /**
      * Retourne les informations d'un comptable
      * 
@@ -133,10 +133,41 @@ class PdoGsb
 
     public function getAllVisiteur()
     {
-        $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom FROM visiteur');
+        $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom, visiteur.login FROM visiteur');
         $requetePrepare->execute();
 
         $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+    /**
+     * takes the visiteur login in params and return the id that correspond to the user
+     * @param $visiteurLogin
+     * @return string|null
+     */
+    public function getVisiteurId($visiteurLogin) {
+        $requetePrepare = $this->connexion->prepare('SELECT visiteur.id FROM visiteur WHERE visiteur.login = :login');
+        $requetePrepare->bindParam(':login', $visiteurLogin, PDO::PARAM_STR);
+        $requetePrepare->execute();
+
+        $result = $requetePrepare->fetch(PDO::FETCH_ASSOC);
+
+        if ($result && isset($result['id'])) return (string) $result['id'];
+        else return null;
+    }
+
+    /**Take the id of the visiteur in params and return the month he has in fichefrais
+     * @param $idVisiteur
+     * @return void
+     */
+    public function getAllMoisVisiteur($idVisiteur) {
+        $requetePrepare = $this->connexion->prepare('SELECT * FROM fichefrais WHERE fichefrais.idvisiteur = :idvisiteur');
+        $requetePrepare->bindParam(':idvisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->execute();
+
+        $result = $requetePrepare->fetch(PDO::FETCH_ASSOC);
+
         return $result;
     }
 
