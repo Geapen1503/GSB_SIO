@@ -18,7 +18,7 @@ $visiteurs = $pdo->getAllVisiteur();
 </head>
 <body>-->
 
-
+<!-- Début code à garder -->
 <div class="visiteur-choice-section">
     <label for="visiteur">Choisir le visiteur :</label>
     <input list="visiteurs" name="visiteur" id="visiteur" placeholder="Taper pour rechercher...">
@@ -29,7 +29,7 @@ $visiteurs = $pdo->getAllVisiteur();
             </option>
         <?php endforeach; ?>
     </datalist>
-   
+   <!-- Fin code à garder -->
 </div>
 <div class="row">    
     <h2 class="orgcomptable">Valider la fiche de frais</h2>
