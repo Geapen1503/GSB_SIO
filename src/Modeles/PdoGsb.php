@@ -162,14 +162,15 @@ class PdoGsb
      * @return void
      */
     public function getAllMoisVisiteur($idVisiteur) {
-        $requetePrepare = $this->connexion->prepare('SELECT * FROM fichefrais WHERE fichefrais.idvisiteur = :idvisiteur');
+        $requetePrepare = $this->connexion->prepare('SELECT mois FROM fichefrais WHERE fichefrais.idvisiteur = :idvisiteur');
         $requetePrepare->bindParam(':idvisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->execute();
 
-        $result = $requetePrepare->fetch(PDO::FETCH_ASSOC);
+        $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
     }
+
 
     /**
      * Retourne sous forme d'un tableau associatif toutes les lignes de frais
