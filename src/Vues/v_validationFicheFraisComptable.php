@@ -1,11 +1,15 @@
 <?php
 
-/* 
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHP.php to edit this template
  */
 
-$visiteurs = $pdo->getAllVisiteurs();
+
+
+$pdo = PdoGsb::getPdoGsb();
+$visiteurs = $pdo->getAllVisiteur();
+
 
 ?>
 
@@ -70,59 +74,71 @@ $visiteurs = $pdo->getAllVisiteurs();
 <body>
 
 
-<div class="visiteur-choice-section">
-    <label for="visiteur">Choisir le visiteur:</label>
-    <select name="visiteur" id="visiteur">
-        <?php foreach ($visiteurs as $visiteur): ?>
-            <option class="userLoginOption" value="<?= htmlspecialchars($visiteur['login']) ?>">
-                <?= htmlspecialchars($visiteur['login']) ?>
-            </option>
-        <?php endforeach; ?>
+<?php
+if (isset($_POST['visiteur'])) {
+    $visiteurLogin = $_POST['visiteur'];
+    echo "Le visiteur sélectionné est : " . htmlspecialchars($visiteurLogin);
 
-    </select>
+    $visiteurId = $pdo->getVisiteurId(htmlspecialchars($visiteurLogin));
+    $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
+}
+?>
 
-    <?php
-        if (isset($_POST['visiteur'])) $visiteurName = $_POST['visiteur'];
-    ?>
+<form method="POST" action="">
+    <div class="visiteur-choice-section">
+        <label for="visiteur">Choisir le visiteur :</label>
+        <input list="visiteurs" name="visiteur" id="visiteur" placeholder="Taper pour rechercher...">
+        <datalist id="visiteurs">
+            <?php foreach ($visiteurs as $visiteur): ?>
+                <option value="<?= htmlspecialchars($visiteur['login']) ?>">
+                    <?= htmlspecialchars($visiteur['login']) ?>
+                </option>
+            <?php endforeach; ?>
+        </datalist>
+    </div>
 
-    <label for="mois">Mois:</label>
-    <select name="mois" id="mois">
+    <?php if (isset($visiteurMonths)): ?>
+        <div class="mois-choice-section">
+            <label for="mois">Choisir le mois :</label>
+            <select name="mois" id="mois">
+                <?php foreach ($visiteurMonths as $month): ?>
+                    <option value="<?= htmlspecialchars($month['mois']) ?>">
+                        <?= htmlspecialchars($month['mois']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    <?php endif; ?>
 
-        <?php
-        $first_year = 2010;
-        $first_month = 1;
-        $nb_years = date('Y') - 2009;
+    <button type="submit">Valider</button>
+</form>
 
-        $dates = [];
-
-        for ($year = $first_year; $year < $first_year + $nb_years; $year++) {
-            for ($mois = $first_month; $mois <= 12; $mois++) {
-                $date = str_pad($mois, 2, '0', STR_PAD_LEFT) . '/' . $year;
-                $dates[] = $date;
-            }
-            $first_month = 1;
-        }
-
-        foreach ($dates as $date) {
-            $dateEntree = $date;
-            list($mois, $annee) = explode("/", $dateEntree);
-            $moisActuel = date('m');
-            $anneeActuelle = date('Y');
-
-            if ($mois >= 1 && $mois <= 12 && $mois == $moisActuel && $annee == $anneeActuelle) echo $options = '<option value="date" selected>', $date, '</option>';
-            else echo $options = '<option value="date">', $date, '</option>';
-        }
-        ?>
+<?php
+if (isset($_POST['mois'])) {
+    $moisSelectionne = $_POST['mois'];
 
 
-    </select>
-</div>
+
+    $newDate = $moisSelectionne;
+    echo "Le mois sélectionné est : " . htmlspecialchars($newDate);
+
+    $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
+}
+?>
+
+
+
+<?php
+$visiteurId = $pdo->getVisiteurId(htmlspecialchars($visiteurLogin));
+$visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
+
+?>
+
+
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
     <div class="row">
-        <h2>Renseigner ma fiche de frais du mois
-            <?php echo $numMois . '-' . $numAnnee ?>
-        </h2>
+
         <h3>Eléments forfaitisés</h3>
         <div class="col-md-4">
             <form method="post"
@@ -130,86 +146,89 @@ $visiteurs = $pdo->getAllVisiteurs();
                   role="form">
                 <fieldset>
                     <?php
-                    /*
+                    $idVisiteur = $visiteurId;
+
+                    //list($mois, $annee) = explode("/", $date);
+                    //$leMois = $annee . str_pad($mois, 2, '0', STR_PAD_LEFT);
+
+                    //$dateUnformat = '03/10/2023';
+                    //echo $newDate = \Outils\Utilitaires::getMois($dateUnformat);
+
+                    $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $newDate);
+
+
                     foreach ($lesFraisForfait as $unFrais) {
                         $idFrais = $unFrais['idfrais'];
                         $libelle = htmlspecialchars($unFrais['libelle']);
-                        $quantite = $unFrais['quantite'];*/
+                        $quantite = $unFrais['quantite'];
                     ?>
                         <div class="form-group">
-                            <label for="idFrais"><?php /*echo $libelle*/ ?></label>
+                            <label for="idFrais"><?php echo $libelle ?></label>
                             <input type="text" id="idFrais"
-                                   name="lesFrais[<?php /*echo $idFrais*/ ?>]"
+                                   name="lesFrais[<?php echo $idFrais ?>]"
                                    size="10" maxlength="5"
-                                   value="<?php /*echo $quantite*/ ?>"
+                                   value="<?php echo $quantite ?>"
                                    class="form-control">
                         </div>
                         <?php
-                    //}
+                    }
                     ?>
-                    <button class="btn btn-success" type="submit">Ajouter</button>
-                    <button class="btn btn-danger" type="reset">Effacer</button>
+                    <button class="btn btn-success" type="submit">Corriger</button>
+                    <button class="btn btn-danger" type="reset">Réinitialiser</button>
+
                 </fieldset>
             </form>
         </div>
     </div>
 </div>
 
-<div class="table-section">
-    <h3>Descriptif des éléments hors forfait</h3>
-    <table>
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Libellé</th>
-            <th>Montant</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
+<div class="row">
+    <table class="panel panel-info">
+        <div class="panel-heading">Descriptif des éléments hors forfait</div>
+            <table class="table table-bordered table-responsive">
+                <thead>
+                <tr>
+                    <th class="date">Date</th>
+                    <th class="libelle">Libellé</th>
+                    <th class="montant">Montant</th>
+                    <th class="action">&nbsp;</th>
 
-        <?php
+                    <form action="index.php?uc=gererFrais&action=validerCreationFrais" method="post" role="form">
 
+                        <?php
+                        $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $newDate);
 
+                        foreach ($lesFraisHorsForfait as $unHorsFrais) {
+                            $dateHorsFrais = $unHorsFrais['date'];
+                            $horsLibelle = htmlspecialchars($unHorsFrais['libelle']);
+                            $horsMontant = $unHorsFrais['montant'];
+                        ?>
+                        <tr>
+                            <th class="date"><?php echo $dateHorsFrais; ?></th>
+                            <th class="libelle"><?php echo $horsLibelle; ?></th>
+                            <th class="montant"><?php echo $horsMontant; ?></th>
+                            <th class="action">
+                                <button class="btn btn-success" type="submit">Corriger</button>
+                                <button class="btn btn-danger" type="reset">Réinitialiser</button>
+                            </th>
+                        </tr>
 
-        echo '
-            <tr>
-                <td><input type="text" value="14/08/2022"></td>
-                <td><input type="text" value="Taxi"></td>
-                <td><input type="number" value="32.50"></td>
-                <td>
-                    <input type="submit" value="Corriger">
-                    <input type="reset" value="Réinitialiser">
-                </td>
-            </tr>
-        ';
+                        <?php
+                        }
+                        ?>
 
-        ?>
+                        <!-- <button class="btn btn-success" type="submit">Corriger</button>
+                        <button class="btn btn-danger" type="reset">Réinitialiser</button> -->
+                    </form>
+                </tr>
+                </thead>
 
-        <!--
-        <tr>
-            <td><input type="text" value="14/08/2022"></td>
-            <td><input type="text" value="Taxi"></td>
-            <td><input type="number" value="32.50"></td>
-            <td>
-                <input type="submit" value="Corriger">
-                <input type="reset" value="Réinitialiser">
-            </td>
-        </tr>
-        -->
-        </tbody>
-    </table>
+            </table>
 
-    <div class="validation-section">
-        <label for="justificatifs">Nombre de justificatifs:</label>
-        <input type="number" id="justificatifs" name="justificatifs" value="2">
-
-        <div class="action-buttons">
-            <input type="submit" value="Valider">
-            <input type="reset" value="Réinitialiser">
-        </div>
     </div>
 </div>
+
+
 </body>
 </html>
 
