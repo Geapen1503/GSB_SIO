@@ -57,7 +57,7 @@ if ($_SESSION["typeUtilisateur"] == 'visiteur') { echo '
             </div>
         ';}
         else if ($_SESSION["typeUtilisateur"] == 'comptable') { echo '
-            <div class="panel panel-primary" >
+            <div class="panel panel-orange" >
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <span class="glyphicon glyphicon-bookmark"></span>

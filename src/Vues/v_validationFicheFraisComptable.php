@@ -5,7 +5,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHP.php to edit this template
  */
 
-
+use Modeles\PdoGsb;
 
 $pdo = PdoGsb::getPdoGsb();
 $visiteurs = $pdo->getAllVisiteur();
@@ -117,8 +117,6 @@ if (isset($_POST['visiteur'])) {
 if (isset($_POST['mois'])) {
     $moisSelectionne = $_POST['mois'];
 
-
-
     $newDate = $moisSelectionne;
     echo "Le mois sélectionné est : " . htmlspecialchars($newDate);
 
@@ -138,7 +136,6 @@ $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
     <div class="row">
-
         <h3>Eléments forfaitisés</h3>
         <div class="col-md-4">
             <form method="post"
@@ -175,7 +172,6 @@ $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
                     ?>
                     <button class="btn btn-success" type="submit">Corriger</button>
                     <button class="btn btn-danger" type="reset">Réinitialiser</button>
-
                 </fieldset>
             </form>
         </div>
@@ -224,7 +220,6 @@ $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
                 </thead>
 
             </table>
-
     </div>
 </div>
 

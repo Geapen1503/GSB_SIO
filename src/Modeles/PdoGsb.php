@@ -90,22 +90,20 @@ class PdoGsb
      *
      * @return l'id, le nom et le prénom sous la forme d'un tableau associatif
      */
-    public function getInfosVisiteur($login, $mdp): array
+    public function getInfosVisiteur($login): array
     {
         $requetePrepare = $this->connexion->prepare(
             'SELECT visiteur.id AS id, visiteur.nom AS nom, '
             . 'visiteur.prenom AS prenom '
             . 'FROM visiteur '
-            . 'WHERE visiteur.login = :unLogin AND visiteur.mdp = :unMdp'
+            . 'WHERE visiteur.login = :unLogin '
         );
         $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':unMdp', $mdp, PDO::PARAM_STR);
         $requetePrepare->execute();
-
         $result = $requetePrepare->fetch();
         return $result ? $result : [];
+        
     }
-
 
     /**
      * Retourne les informations d'un comptable
@@ -115,18 +113,16 @@ class PdoGsb
      * 
      * @return l'id, le nom et le prénom sous la forme d'un tableau associatif
      */
-    public function getInfosComptable($login, $mdp): array
+    public function getInfosComptable($login): array
     {
         $requetePrepare = $this->connexion->prepare(
             'SELECT comptable.id AS id, comptable.nom AS nom, '
             . 'comptable.prenom AS prenom '
             . 'FROM comptable '
-            . 'WHERE comptable.login = :unLogin AND comptable.mdp = :unMdp'
+            . 'WHERE comptable.login = :unLogin'
         );
         $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':unMdp', $mdp, PDO::PARAM_STR);
         $requetePrepare->execute();
-
         $result = $requetePrepare->fetch();
         return $result ? $result : [];
     }
@@ -284,7 +280,66 @@ class PdoGsb
         $requetePrepare->execute();
         return $requetePrepare->fetchAll();
     }
+    
+    public function setMdpVisiteur() {
+        $requetePrepare = $this->connexion->prepare(
+          'SELECT id, mdp '
+          . ' FROM visiteur '
+        );
+        $requetePrepare->execute();
+        $lignes = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($lignes as $array){
+            $id = $array["id"];
+            $mdp = $array["mdp"];
+            
+        $hashMdp = password_hash($mdp, PASSWORD_DEFAULT);
+        $req = $this->connexion->prepare('UPDATE visiteur SET mdp= :hashMdp  WHERE id= :unId ');
+        $req -> bindParam(':unId', $id, PDO::PARAM_STR);
+        $req -> bindParam(':hashMdp', $hashMdp, PDO::PARAM_STR);
+        $req -> execute();
+        }
+    }
+    
+    public function getMdpVisiteur($login) {
+        $requetePrepare = $this->connexion->prepare(
+                'SELECT mdp '
+                . 'FROM visiteur '
+                . 'WHERE visiteur.login = :unLogin'
+        );
+        $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        return $requetePrepare->fetch(PDO::FETCH_OBJ)->mdp;
+    }
 
+    public function setMdpComptable() {
+        $requetePrepare = $this->connexion->prepare(
+          'SELECT id, mdp '
+          . ' FROM comptable '
+        );
+        $requetePrepare->execute();
+        $lignes = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($lignes as $array){
+            $id = $array["id"];
+            $mdp = $array["mdp"];
+            
+        $hashMdp = password_hash($mdp, PASSWORD_DEFAULT);
+        $req = $this->connexion->prepare('UPDATE comptable SET mdp= :hashMdp  WHERE id= :unId ');
+        $req -> bindParam(':unId', $id, PDO::PARAM_STR);
+        $req -> bindParam(':hashMdp', $hashMdp, PDO::PARAM_STR);
+        $req -> execute();
+        }
+    }
+    
+    public function getMdpComptable($login) {
+        $requetePrepare = $this->connexion->prepare(
+                'SELECT mdp '
+                . 'FROM comptable '
+                . 'WHERE comptable.login = :unLogin'
+        );
+        $requetePrepare->bindParam(':unLogin', $login, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        return $requetePrepare->fetch(PDO::FETCH_OBJ)->mdp;
+    }
     /**
      * Retourne tous les id de la table FraisForfait
      *
@@ -577,4 +632,21 @@ class PdoGsb
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
+    
+    public function getMoisFichesCloturees($idVisiteur) {
+    
+    $requetePrepare = $this->connexion->prepare(
+           'SELECT fichefrais.mois '
+        .   ' FROM fichefrais '
+        .   ' INNER JOIN visiteur ON fichefrais.idVisiteur = visiteur.id '
+        .   ' INNER JOIN etat ON fichefrais.idEtat = etat.id '
+        .   ' WHERE visiteur.id = :unIdVisiteur '
+        .   ' AND etat.id = "CL" '
+        .   ' ORDER BY fichefrais.mois' 
+    );
+    $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
+    $requetePrepare->execute();
+    $moisClotures = $requetePrepare->fetchAll(PDO::FETCH_COLUMN);
+    return $moisClotures;
+}
 }

@@ -4,6 +4,9 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+#orange {
+    color : orange;
+}
 html {
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
@@ -4099,24 +4102,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #fff;
   background-color: #337ab7;
 }
-.nav-pills2 > li {
-  display: flex;
-  flex-direction: row;
-  float: left;
-}
 
-.nav-pills2 > li > a {
-  border-radius: 4px;
-}
-.nav-pills2 > li + li {
-  margin-left: 2px;
-}
-.nav-pills2 > li.active > a,
-.nav-pills2 > li.active > a:hover,
-.nav-pills2 > li.active > a:focus {
-  color: #fff;
-  background-color: orange;
-}
 .nav-stacked > li {
   float: none;
 }
