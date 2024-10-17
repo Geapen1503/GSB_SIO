@@ -22,43 +22,62 @@ $mois = Utilitaires::getMois(date('d/m/Y'));
 $numAnnee = substr($mois, 0, 4);
 $numMois = substr($mois, 4, 2);
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-switch ($action) {
-    case 'saisirFrais':
-        if ($_SESSION['typeUtilisateur'] == 'visiteur') {
+
+if ($_SESSION['typeUtilisateur'] == 'visiteur') {
+    switch ($action) {
+        case 'saisirFrais':
+            //if ($_SESSION['typeUtilisateur'] == 'visiteur') {
             if ($pdo->estPremierFraisMois($idVisiteur, $mois)) {
                 $pdo->creeNouvellesLignesFrais($idVisiteur, $mois);
             }
-        } elseif($_SESSION['typeUtilisateur'] == 'comptable') {
+            //} elseif($_SESSION['typeUtilisateur'] == 'comptable') {
+            //require PATH_VIEWS . 'v_validationFicheFraisComptable.php';
+            //}
+            break;
+        case 'validerMajFraisForfait':
+            $lesFrais = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
+            if (Utilitaires::lesQteFraisValides($lesFrais)) {
+                $pdo->majFraisForfait($idVisiteur, $mois, $lesFrais);
+            } else {
+                Utilitaires::ajouterErreur('Les valeurs des frais doivent être numériques');
+                include PATH_VIEWS . 'v_erreurs.php';
+            }
+            break;
+        case 'validerCreationFrais':
+            $dateFrais = Utilitaires::dateAnglaisVersFrancais(
+                filter_input(INPUT_POST, 'dateFrais', FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+            );
+            $libelle = filter_input(INPUT_POST, 'libelle', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $montant = filter_input(INPUT_POST, 'montant', FILTER_VALIDATE_FLOAT);
+            Utilitaires::valideInfosFrais($dateFrais, $libelle, $montant);
+            if (Utilitaires::nbErreurs() != 0) {
+                include PATH_VIEWS . 'v_erreurs.php';
+            } else {
+                $pdo->creeNouveauFraisHorsForfait($idVisiteur, $mois, $libelle, $dateFrais, $montant);
+            }
+            break;
+        case 'supprimerFrais':
+            $idFrais = filter_input(INPUT_GET, 'idFrais', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $pdo->supprimerFraisHorsForfait($idFrais);
+            break;
+    }
+} elseif($_SESSION['typeUtilisateur'] == 'comptable') {
+    switch ($action) {
+        case 'saisirFrais':
             require PATH_VIEWS . 'v_validationFicheFraisComptable.php';
-        }
-        break;
-    case 'validerMajFraisForfait':
-        $lesFrais = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
-        if (Utilitaires::lesQteFraisValides($lesFrais)) {
-            $pdo->majFraisForfait($idVisiteur, $mois, $lesFrais);
-        } else {
-            Utilitaires::ajouterErreur('Les valeurs des frais doivent être numériques');
-            include PATH_VIEWS . 'v_erreurs.php';
-        }
-        break;
-    case 'validerCreationFrais':
-        $dateFrais = Utilitaires::dateAnglaisVersFrancais(
-            filter_input(INPUT_POST, 'dateFrais', FILTER_SANITIZE_FULL_SPECIAL_CHARS)
-        );
-        $libelle = filter_input(INPUT_POST, 'libelle', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $montant = filter_input(INPUT_POST, 'montant', FILTER_VALIDATE_FLOAT);
-        Utilitaires::valideInfosFrais($dateFrais, $libelle, $montant);
-        if (Utilitaires::nbErreurs() != 0) {
-            include PATH_VIEWS . 'v_erreurs.php';
-        } else {
-            $pdo->creeNouveauFraisHorsForfait($idVisiteur, $mois, $libelle, $dateFrais, $montant);
-        }
-        break;
-    case 'supprimerFrais':
-        $idFrais = filter_input(INPUT_GET, 'idFrais', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $pdo->supprimerFraisHorsForfait($idFrais);
-        break;
+            break;
+        case 'validerMajFraisForfait':
+            break;
+        case 'validerCreationFrais':
+            break;
+        case 'supprimerFrais':
+            $idFrais = filter_input(INPUT_GET, 'idFrais', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $pdo->supprimerFraisHorsForfait($idFrais);
+            break;
+    }
 }
+
+
 $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $mois);
 $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
 

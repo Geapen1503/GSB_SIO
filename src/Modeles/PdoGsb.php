@@ -131,7 +131,13 @@ class PdoGsb
         return $result ? $result : [];
     }
 
-    public function getAllVisiteur()
+
+    /**
+     * Retourne les nom, prenom et login de tous les visiteurs
+     *
+     * @return array|false
+     */
+    public function getAllVisiteurs()
     {
         $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom, visiteur.login FROM visiteur');
         $requetePrepare->execute();
@@ -164,6 +170,31 @@ class PdoGsb
     public function getAllMoisVisiteur($idVisiteur) {
         $requetePrepare = $this->connexion->prepare('SELECT mois FROM fichefrais WHERE fichefrais.idvisiteur = :idvisiteur');
         $requetePrepare->bindParam(':idvisiteur', $idVisiteur, PDO::PARAM_STR);
+
+      
+    /**
+     * retourne l'id d'un visiteur grâce à son login
+     *
+     * @param $loginVisiteur
+     * @return array|false
+     */
+    public function getVisiteurId($loginVisiteur) {
+        $requetePrepare = $this->connexion->prepare('SELECT visiteur.id FROM visiteur WHERE visiteur.login =', $loginVisiteur);
+        $requetePrepare->execute();
+
+        $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * retourne toutes les infos de frais hors forfait
+     * d'un utiliseur grâce à son id mis en paramètre
+     * @param $idUserHorsForfait
+     * @return array|false
+     */
+    public function getLigneFraisHorsForfait($idUserHorsForfait) {
+        $requetePrepare = $this->connexion->prepare('SELECT * FROM lignefraishorsforfait WHERE lignefraishorsforfait.id =', $idUserHorsForfait);
+
         $requetePrepare->execute();
 
         $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
