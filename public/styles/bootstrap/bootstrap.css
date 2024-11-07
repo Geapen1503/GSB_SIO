@@ -4,9 +4,6 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
-#orange {
-    color : orange;
-}
 html {
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
@@ -4102,6 +4099,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #fff;
   background-color: #337ab7;
 }
+
 
 .nav-stacked > li {
   float: none;

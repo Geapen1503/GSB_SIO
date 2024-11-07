@@ -32,14 +32,12 @@ footer .container p {
 code {
   font-size: 80%;
 }
-#orange{
-    background-color : orange;
-}
+
 .orgcomptable{
-    color : orange;
+  color : orange;
 }
 .orgcomptable:hover{
-    color : orange;
+  color : orange;
 }
 .nav-pills2 > li {
   float: left;
@@ -57,10 +55,10 @@ code {
   background-color: orange;
 }
 .panel-orange {
-    border-color: orange;
+  border-color: orange;
 }
 .panel-orange > .panel-heading{
-    color: #fff;
-border-color:orange;
-background-color : orange;
+  color: #fff;
+  border-color:orange;
+  background-color : orange;
 }

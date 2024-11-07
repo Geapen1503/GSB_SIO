@@ -19,57 +19,6 @@ $visiteurs = $pdo->getAllVisiteur();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valider la fiche de frais</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .header, .validation-section {
-            margin: 20px 0;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header img {
-            width: 100px;
-        }
-        .form-section, .table-section {
-            margin-top: 20px;
-        }
-        label {
-            margin-right: 10px;
-        }
-        input[type="text"], input[type="number"], select {
-            padding: 5px;
-            margin: 5px 0;
-        }
-        .forfait-section input[type="number"] {
-            width: 100px;
-        }
-        .action-buttons {
-            margin-top: 20px;
-        }
-        .action-buttons input {
-            padding: 10px 20px;
-            margin-right: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .table-section input[type="text"], .table-section input[type="number"] {
-            width: 100%;
-        }
-    </style>
 </head>
 <body>
 
