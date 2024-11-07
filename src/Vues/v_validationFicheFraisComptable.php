@@ -19,57 +19,6 @@ $visiteurs = $pdo->getAllVisiteur();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valider la fiche de frais</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .header, .validation-section {
-            margin: 20px 0;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header img {
-            width: 100px;
-        }
-        .form-section, .table-section {
-            margin-top: 20px;
-        }
-        label {
-            margin-right: 10px;
-        }
-        input[type="text"], input[type="number"], select {
-            padding: 5px;
-            margin: 5px 0;
-        }
-        .forfait-section input[type="number"] {
-            width: 100px;
-        }
-        .action-buttons {
-            margin-top: 20px;
-        }
-        .action-buttons input {
-            padding: 10px 20px;
-            margin-right: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .table-section input[type="text"], .table-section input[type="number"] {
-            width: 100%;
-        }
-    </style>
 </head>
 <body>
 
@@ -79,39 +28,49 @@ if (isset($_POST['visiteur'])) {
     $visiteurLogin = $_POST['visiteur'];
     echo "Le visiteur sélectionné est : " . htmlspecialchars($visiteurLogin);
 
+    // Obtenez l'ID et les mois du visiteur.
     $visiteurId = $pdo->getVisiteurId(htmlspecialchars($visiteurLogin));
     $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
+} else {
+    // Formulaire de sélection du visiteur.
+    ?>
+    <form method="POST" action="">
+        <div class="visiteur-choice-section">
+            <label for="visiteur">Choisir le visiteur :</label>
+            <input list="visiteurs" name="visiteur" id="visiteur" placeholder="Taper pour rechercher...">
+            <datalist id="visiteurs">
+                <?php foreach ($visiteurs as $visiteur) : ?>
+                    <option value="<?php echo htmlspecialchars($visiteur['login']); ?>">
+                        <?php echo htmlspecialchars($visiteur['login']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </datalist>
+        </div>
+        <input type="submit" value="Valider">
+    </form>
+    <?php
 }
-?>
 
-<form method="POST" action="">
-    <div class="visiteur-choice-section">
-        <label for="visiteur">Choisir le visiteur :</label>
-        <input list="visiteurs" name="visiteur" id="visiteur" placeholder="Taper pour rechercher...">
-        <datalist id="visiteurs">
-            <?php foreach ($visiteurs as $visiteur): ?>
-                <option value="<?= htmlspecialchars($visiteur['login']) ?>">
-                    <?= htmlspecialchars($visiteur['login']) ?>
-                </option>
-            <?php endforeach; ?>
-        </datalist>
-    </div>
-
-    <?php if (isset($visiteurMonths)): ?>
+// Affichez le formulaire de mois si le visiteur est sélectionné.
+if (isset($visiteurMonths)) {
+    ?>
+    <form method="POST" action="">
         <div class="mois-choice-section">
             <label for="mois">Choisir le mois :</label>
             <select name="mois" id="mois">
-                <?php foreach ($visiteurMonths as $month): ?>
-                    <option value="<?= htmlspecialchars($month['mois']) ?>">
-                        <?= htmlspecialchars($month['mois']) ?>
+                <?php foreach ($visiteurMonths as $month) : ?>
+                    <option value="<?php echo htmlspecialchars($month['mois']); ?>">
+                        <?php echo htmlspecialchars($month['mois']); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
-    <?php endif; ?>
-
-    <button type="submit">Valider</button>
-</form>
+        <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+        <input type="submit" value="Valider">
+    </form>
+    <?php
+}
+?>
 
 <?php
 if (isset($_POST['mois'])) {
