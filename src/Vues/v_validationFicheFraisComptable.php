@@ -83,15 +83,6 @@ if (isset($_POST['mois'])) {
 }
 ?>
 
-
-
-<?php
-$visiteurId = $pdo->getVisiteurId(htmlspecialchars($visiteurLogin));
-$visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
-
-?>
-
-
 <div class="form-section">
     <h2>Valider la fiche de frais</h2>
     <div class="row">
@@ -102,16 +93,23 @@ $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
                   role="form">
                 <fieldset>
                     <?php
+                    // Initialisation des variables si elles ne sont pas définies
+                    if (!isset($visiteurId)) {
+                        $visiteurId = ''; // Valeur par défaut
+                    }
+
+                    if (!isset($newDate)) {
+                        $newDate = ''; // Valeur par défaut
+                    }
+
                     $idVisiteur = $visiteurId;
 
-                    //list($mois, $annee) = explode("/", $date);
-                    //$leMois = $annee . str_pad($mois, 2, '0', STR_PAD_LEFT);
-
-                    //$dateUnformat = '03/10/2023';
-                    //echo $newDate = \Outils\Utilitaires::getMois($dateUnformat);
-
-                    $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $newDate);
-
+                    // Assurez-vous que les variables sont correctement définies avant de les utiliser
+                    if ($visiteurId !== '' && $newDate !== '') {
+                        $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
+                    } else {
+                        $lesFraisForfait = []; // Empêche l'utilisation de variables non initialisées
+                    }
 
                     foreach ($lesFraisForfait as $unFrais) {
                         $idFrais = $unFrais['idfrais'];
