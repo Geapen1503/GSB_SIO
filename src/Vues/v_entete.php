@@ -90,7 +90,7 @@
                     <div class="col-md-8">
                         <ul class="nav nav-pills2 pull-right" role="tablist">
                             <li <?php if (!$uc || $uc == 'accueil') { ?>class="active" <?php } ?>>
-                                <a class="orgcomptable" href="index.php" >
+                                <a class="orgcomptable" href="index.php">
                                     <span class="glyphicon glyphicon-home"></span>
                                     Accueil
                                 </a>

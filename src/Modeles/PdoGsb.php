@@ -265,6 +265,7 @@ class PdoGsb
         return $lesLignes;
     }
 
+
     /**
      * Retourne le nombre de justificatif d'un visiteur pour un mois donné
      *
@@ -315,6 +316,40 @@ class PdoGsb
         $requetePrepare->execute();
         return $requetePrepare->fetchAll();
     }
+
+    /** Fonction qui prend l'id visiteur, les mois et le frais en paramètre, et les insère en bd
+     *
+     * @param $idVisiteur
+     * @param $mois
+     * @param $unFrais
+     * @return void
+     */
+    public function setLesFraisForfait($idVisiteur, $mois, $unFrais): void {
+        $requeteSQL = 'UPDATE lignefraisforfait SET quantite = CASE idfraisforfait ';
+        foreach ($unFrais as $idFraisForfait => $quantite) {
+            $requeteSQL .= 'WHEN :idFraisForfait' . $idFraisForfait . ' THEN :quantite' . $idFraisForfait . ' ';
+        }
+        $requeteSQL .= 'END WHERE idvisiteur = :unIdVisiteur AND mois = :unMois';
+
+        $requetePrepare = $this->connexion->prepare($requeteSQL);
+        foreach ($unFrais as $idFraisForfait => $quantite) {
+            $requetePrepare->bindValue(':idFraisForfait' . $idFraisForfait, $idFraisForfait, PDO::PARAM_STR);
+            $requetePrepare->bindValue(':quantite' . $idFraisForfait, $quantite, PDO::PARAM_INT);
+        }
+        $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+
+        $requetePrepare->execute();
+    }
+
+    public function resetLesFraisForfait($idVisiteur, $mois): void {
+        $requeteSQL = 'UPDATE lignefraisforfait SET quantite = 0 WHERE idvisiteur = :idVisiteur AND mois = :mois';
+        $requetePrepare = $this->connexion->prepare($requeteSQL);
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+    }
+
 
     /**
      * Retourne tous les id de la table FraisForfait
@@ -608,4 +643,6 @@ class PdoGsb
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
+
 }
+
