@@ -58,6 +58,21 @@ code {
 }
 .panel-orange > .panel-heading{
     color: #fff;
-border-color:orange;
-background-color : orange;
+    border-color:orange;
+    background-color : orange;
+}
+
+.table-orange th,
+.table-orange td {
+    border: 2px solid #FFA500 !important; /* Utilisation de !important pour forcer le style */
+}
+
+.table-orange {
+    border-collapse: collapse; /* Assure que les bordures sont visibles de façon uniforme */
+}
+#top {
+    margin-top : 15px;
+}
+#warn{
+    color: red;
 }
