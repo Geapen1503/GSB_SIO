@@ -157,6 +157,11 @@ if (isset($_POST['mois']) && isset($_POST['visiteur'])) {
             </tr>
             </thead>
         </table>
+        <form method="POST" action="../tools/generate_pdf.php">
+            <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+            <input type="hidden" name="mois" value="<?php echo htmlspecialchars($newDate); ?>">
+            <button type="submit" class="btn btn-primary">Générer le PDF</button>
+        </form>
 </div>
 </div>
 
