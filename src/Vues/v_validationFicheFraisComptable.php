@@ -23,29 +23,25 @@ $visiteurs = $pdo->getAllVisiteur();
 
 
 <?php
-// Vérifier si un visiteur a été sélectionné
 if (isset($_POST['visiteur'])) {
     $visiteurLogin = $_POST['visiteur'];
-    
-    // Vérifier si le visiteur existe dans la base de données
+
     $visiteurId = $pdo->getVisiteurId($visiteurLogin);
-    
-    // Si le visiteur n'existe pas, afficher une erreur
+
     if ($visiteurId === false || empty($visiteurId)) {
         ?> <p id="warn"> <?php echo "Ce visiteur n'existe pas. Veuillez réessayer." ?> </p> <?php
         $visiteurValide = false;
     } else {
         echo "Le visiteur sélectionné est : " . htmlspecialchars($visiteurLogin);
         $visiteurValide = true;
-        
-        // Récupérer les mois du visiteur uniquement si le visiteur existe
+
         $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
     }
 } else {
-    $visiteurValide = false; // Pas encore de visiteur sélectionné
+    $visiteurValide = false;
 }
 ?>
-<?php if (!$visiteurValide): ?>        
+<?php if (!$visiteurValide): ?>
     <form method="POST" action="">
         <div class="visiteur-choice-section" id="top">
             <label for="visiteur">Choisir le visiteur :</label>
@@ -61,9 +57,8 @@ if (isset($_POST['visiteur'])) {
         <input type="submit" value="Valider">
     </form>
 <?php endif; ?>
-    <?php
-    
-// Affichez le formulaire de mois si le visiteur est sélectionné.
+<?php
+
 if (isset($visiteurMonths)) {
     ?>
     <form method="POST" action="">
@@ -73,9 +68,9 @@ if (isset($visiteurMonths)) {
                 <?php foreach ($visiteurMonths as $month) : ?>
                     <?php
                     $mois = $month['mois'];
-                    $year = substr($mois, 0, 4);  // Récupère les 4 premiers caractères (année)
-                    $monthNumber = substr($mois, 4, 2);  // Récupère les 2 derniers caractères (mois)
-                    
+                    $year = substr($mois, 0, 4);
+                    $monthNumber = substr($mois, 4, 2);
+
                     $formattedDate = $monthNumber . '/' . $year;
                     ?>
                     <option value="<?php echo htmlspecialchars($mois); ?>">
@@ -94,7 +89,7 @@ if (isset($visiteurMonths)) {
 <?php
 if (isset($_POST['mois'])) {
     $moisSelectionne = $_POST['mois'];
- 
+
     $newDate = $moisSelectionne;
     echo "Le mois sélectionné est : " . htmlspecialchars($newDate);
 
@@ -104,108 +99,102 @@ if (isset($_POST['mois'])) {
 
 <div class="form-section">
     <?php if (!empty($newDate)) {?>
-    <h2 class='orgcomptable'>Valider la fiche de frais</h2>
-    <?php } ?>
+    <h2>Valider la fiche de frais</h2>
     <div class="row">
-        <?php if (!empty($newDate)) { // Vérifie si un visiteur est sélectionné ?>
-            <h3>Eléments forfaitisés</h3>
-        <?php } ?>
+        <h3>Eléments forfaitisés</h3>
         <div class="col-md-4">
-            <form method="post"
-                  action="index.php?uc=gererFrais&action=validerMajFraisForfait"
-                  role="form">
+            <form method="post" action="" role="form">
                 <fieldset>
                     <?php
-                    // Initialisation des variables
-                    if (!isset($visiteurId)) {
-                        $visiteurId = ''; // Valeur par défaut
-                    }
-
-                    if (!isset($newDate)) {
-                        $newDate = ''; // Valeur par défaut
-                    }
-
-                    $idVisiteur = $visiteurId;
-
-                    // Assurez-vous que les variables sont correctement définies avant de les utiliser
-                    if ($visiteurId !== '' && $newDate !== '') {
+                    if (isset($_POST['CorrigerSubmit']) && isset($_POST['mois']) && isset($_POST['lesFrais'])) {
+                        $pdo->setLesFraisForfait($visiteurId, $newDate, $_POST['lesFrais']);
                         $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
-                    } else {
-                        $lesFraisForfait = []; // Empêche l'utilisation de variables non initialisées
                     }
 
-                    foreach ($lesFraisForfait as $unFrais) {
-                        $idFrais = $unFrais['idfrais'];
-                        $libelle = htmlspecialchars($unFrais['libelle']);
-                        $quantite = $unFrais['quantite'];
-                    ?>
-                        <div class="form-group">
-                            <label for="idFrais"><?php echo $libelle ?></label>
-                            <input type="text" id="idFrais"
-                                   name="lesFrais[<?php echo $idFrais ?>]"
-                                   size="10" maxlength="5"
-                                   value="<?php echo $quantite ?>"
-                                   class="form-control">
-                        </div>
-                        <?php
+                    if (isset($_POST['ResetSubmit']) && isset($newDate)) {
+                        $pdo->resetLesFraisForfait($visiteurId, $newDate);
+                        $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
+                    }
+
+                    if (isset($lesFraisForfait)) {
+                        foreach ($lesFraisForfait as $unFrais) {
+                            $idFrais = $unFrais['idfrais'];
+                            $libelle = htmlspecialchars($unFrais['libelle']);
+                            $quantite = $unFrais['quantite'];
+                            ?>
+                            <div class="form-group">
+                                <label for="idFrais"><?php echo $libelle ?></label>
+                                <input type="text" id="idFrais"
+                                       name="lesFrais[<?php echo $idFrais ?>]"
+                                       size="10" maxlength="5"
+                                       value="<?php echo $quantite ?>"
+                                       class="form-control">
+                            </div>
+                            <?php
+                        }
                     }
                     ?>
-                    <?php if (!empty($newDate)) {?>
-                    <button class="btn btn-success" type="submit">Corriger</button>
-                    <button class="btn btn-danger" type="reset">Réinitialiser</button>
-                    <?php } ?>
+                    <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+                    <input type="hidden" name="mois" value="<?php echo htmlspecialchars($newDate); ?>">
+                    <button class="btn btn-success" name="CorrigerSubmit" type="submit">Corriger</button>
+                    <button class="btn btn-danger" name="ResetSubmit" type="submit">Réinitialiser</button>
                 </fieldset>
             </form>
         </div>
     </div>
+    <?php } ?>
 </div>
 
 <?php if (!empty($newDate)) {?>
-<div class="row">
-    <div class="panel panel-orange">
-        <div class="panel-heading">Descriptif des éléments hors forfait</div>
-        <table class="table table-bordered table-orange">
-            <thead>
+    <div class="row">
+        <div class="panel panel-orange">
+            <div class="panel-heading">Descriptif des éléments hors forfait</div>
+            <table class="table table-bordered table-orange">
+                <thead>
                 <tr class="border-org">
                     <th class="date">Date</th>
                     <th class="libelle">Libellé</th>
                     <th class="montant">Montant</th>
                     <th class="action">&nbsp;</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <?php
-                $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $newDate);
+                $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $newDate);
 
                 foreach ($lesFraisHorsForfait as $unHorsFrais) {
                     $dateHorsFrais = $unHorsFrais['date'];
                     $horsLibelle = htmlspecialchars($unHorsFrais['libelle']);
                     $horsMontant = $unHorsFrais['montant'];
-                ?>
+                    ?>
                     <tr>
                         <td class="date">
-                                <input type="text" name="dateFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $dateHorsFrais; ?>" class="form-control">
-                            </td>
-                            <td class="libelle">
-                                <input type="text" name="libelleFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $horsLibelle; ?>" class="form-control">
-                            </td>
-                            <td class="montant">
-                                <input type="text" name="montantFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $horsMontant; ?>" class="form-control">
-                            </td>
+                            <input type="text" name="dateFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $dateHorsFrais; ?>" class="form-control">
+                        </td>
+                        <td class="libelle">
+                            <input type="text" name="libelleFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $horsLibelle; ?>" class="form-control">
+                        </td>
+                        <td class="montant">
+                            <input type="text" name="montantFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $horsMontant; ?>" class="form-control">
+                        </td>
                         <td class="action">
                             <button class="btn btn-success btn-sm" type="button">Corriger</button>
                             <button class="btn btn-danger btn-sm" type="button">Réinitialiser</button>
                         </td>
                     </tr>
-                <?php
+                    <?php
                 }
                 ?>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+        <form method="POST" action="../tools/generate_pdf.php">
+            <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+            <input type="hidden" name="mois" value="<?php echo htmlspecialchars($newDate); ?>">
+            <button type="submit" class="btn btn-primary">Générer le PDF</button>
+        </form>
     </div>
-</div>
 <?php } ?>
 
 </body>
 </html>
-
