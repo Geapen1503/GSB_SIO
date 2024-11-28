@@ -35,7 +35,7 @@ if (isset($_POST['visiteur'])) {
         echo "Le visiteur sélectionné est : " . htmlspecialchars($visiteurLogin);
         $visiteurValide = true;
 
-        $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
+        $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
     }
 } else {
     $visiteurValide = false;
@@ -45,7 +45,7 @@ if (isset($_POST['visiteur'])) {
     <form method="POST" action="">
         <div class="visiteur-choice-section" id="top">
             <label for="visiteur">Choisir le visiteur :</label>
-            <input list="visiteurs" name="visiteur" id="visiteur" placeholder="Taper pour rechercher..." value="<?php echo isset($visiteurLogin) ? htmlspecialchars($visiteurLogin) : ''; ?>">
+            <input list="visiteurs" autocomplete="off" name="visiteur" id="visiteur" placeholder="Taper pour rechercher..." value="<?php echo isset($visiteurLogin) ? htmlspecialchars($visiteurLogin) : ''; ?>">
             <datalist id="visiteurs">
                 <?php foreach ($visiteurs as $visiteur) : ?>
                     <option value="<?php echo htmlspecialchars($visiteur['login']); ?>">
@@ -147,7 +147,7 @@ if (isset($_POST['mois'])) {
 
 <?php if (!empty($newDate)) {?>
     <div class="row">
-        <div class="panel panel-orange">
+        <div class="panel panel-orange" style="margin-top : 50px;">
             <div class="panel-heading">Descriptif des éléments hors forfait</div>
             <table class="table table-bordered table-orange">
                 <thead>
@@ -166,7 +166,16 @@ if (isset($_POST['mois'])) {
                     $dateHorsFrais = $unHorsFrais['date'];
                     $horsLibelle = htmlspecialchars($unHorsFrais['libelle']);
                     $horsMontant = $unHorsFrais['montant'];
-                    ?>
+                    
+                    if (isset($_POST['CorrigerSubmit']) && isset($_POST['mois']) && isset($_POST['lesFrais'])) {
+                        $pdo->setLesFraisForfait($visiteurId, $newDate, $_POST['lesFrais']);
+                        $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
+                    }
+
+                    if (isset($_POST['ResetSubmit']) && isset($newDate)) {
+                        $pdo->resetLesFraisForfait($visiteurId, $newDate);
+                        $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
+                    } ?>
                     <tr>
                         <td class="date">
                             <input type="text" name="dateFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $dateHorsFrais; ?>" class="form-control">
@@ -178,8 +187,8 @@ if (isset($_POST['mois'])) {
                             <input type="text" name="montantFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $horsMontant; ?>" class="form-control">
                         </td>
                         <td class="action">
-                            <button class="btn btn-success btn-sm" type="button">Corriger</button>
-                            <button class="btn btn-danger btn-sm" type="button">Réinitialiser</button>
+                            <button class="btn btn-success btn-sm" name="CorrigerSubmit" type="submit">Corriger</button>
+                            <button class="btn btn-danger btn-sm" name="ResetSubmit" type="submit">Réinitialiser</button>
                         </td>
                     </tr>
                     <?php
