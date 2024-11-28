@@ -346,6 +346,32 @@ class PdoGsb
         $requetePrepare->execute();
     }
 
+    public function setLesFraisHorsForfait($idVisiteur, $mois, $lesFraisHorsForfait): void {
+        foreach ($lesFraisHorsForfait as $idFraisHorsForfait => $frais) {
+            $requeteSQL = 'UPDATE lignefraishorsforfait 
+                       SET date = :date, libelle = :libelle, montant = :montant 
+                       WHERE id = :idFraisHorsForfait AND idvisiteur = :idVisiteur AND mois = :mois';
+
+            $requetePrepare = $this->connexion->prepare($requeteSQL);
+            $requetePrepare->bindParam(':date', $frais['date'], PDO::PARAM_STR);
+            $requetePrepare->bindParam(':libelle', $frais['libelle'], PDO::PARAM_STR);
+            $requetePrepare->bindParam(':montant', $frais['montant'], PDO::PARAM_INT);
+            $requetePrepare->bindParam(':idFraisHorsForfait', $idFraisHorsForfait, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+            $requetePrepare->execute();
+        }
+    }
+
+    public function resetLesFraisHorsForfait($idVisiteur, $mois): void {
+        $requeteSQL = 'DELETE FROM lignefraishorsforfait WHERE idvisiteur = :idVisiteur AND mois = :mois';
+        $requetePrepare = $this->connexion->prepare($requeteSQL);
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+    }
+
+
 
     /**
      * Retourne tous les id de la table FraisForfait

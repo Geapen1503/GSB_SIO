@@ -178,8 +178,15 @@ if (isset($_POST['mois'])) {
                             <input type="text" name="montantFrais[<?php echo $idFraisHorsForfait; ?>]" value="<?php echo $horsMontant; ?>" class="form-control">
                         </td>
                         <td class="action">
-                            <button class="btn btn-success btn-sm" type="button">Corriger</button>
+                            <button class="btn btn-success btn-sm" name="corrigerHorsForfaitButton" type="button">Corriger</button>
                             <button class="btn btn-danger btn-sm" type="button">Réinitialiser</button>
+
+                            <?php // untested
+                            if (isset($_POST['corrigerHorsForfaitButton'])) {
+                                //$pdo->setLesFraisHorsForfait($visiteurId, );
+                                //$lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $newDate);
+                            }
+                            ?>
                         </td>
                     </tr>
                     <?php
@@ -188,10 +195,10 @@ if (isset($_POST['mois'])) {
                 </tbody>
             </table>
         </div>
-        <form method="POST" action="../tools/generate_pdf.php">
+        <form method="POST" action="../fpdf/scriptToPDF.php">
             <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
             <input type="hidden" name="mois" value="<?php echo htmlspecialchars($newDate); ?>">
-            <button type="submit" class="btn btn-primary">Générer le PDF</button>
+            <button type="submit" href="../fpdf/scriptToPDF.php" class="btn btn-primary">Générer le PDF</button>
         </form>
     </div>
 <?php } ?>
