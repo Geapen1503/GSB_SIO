@@ -68,7 +68,7 @@ if ($_SESSION["typeUtilisateur"] == 'visiteur') { echo '
                     <div class="row">
                         
                         <div class="col-xs-12 col-md-12">
-                            <a href="index.php?uc=gererFrais&action=saisirFrais"
+                            <a href="index.php?uc=gererFraisComptable&action=afficherVisiteurs"
                                class="btn btn-warning btn-lg" role="button">
                                 <span class="glyphicon glyphicon-pencil"></span>
                                 <br>Valider les fiches de frais</a>
