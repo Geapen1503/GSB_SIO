@@ -2,7 +2,7 @@
 
 ?>
 
-<form method="POST" action="index.php?uc=gererFrais&action=selectionnerMois">
+<form method="POST" action="index.php?uc=gererFraisComptable&action=selectionnerMois">
     <label for="visiteur">Choisir le visiteur :</label>
     <input list="visiteurs" name="visiteur" id="visiteur" autocomplete="off">
     <datalist id="visiteurs">

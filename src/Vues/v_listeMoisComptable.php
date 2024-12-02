@@ -1,7 +1,7 @@
 <?php
 ?>
 
-<form method="POST" action="index.php?uc=gererFrais&action=afficherFicheFrais">
+<form method="POST" action="index.php?uc=gererFraisComptable&action=afficherFicheFrais">
     <label for="mois">Choisir le mois :</label>
     <select name="mois" id="mois">
         <?php foreach ($visiteurMonths as $month) : ?>

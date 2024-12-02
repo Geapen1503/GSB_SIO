@@ -7,11 +7,11 @@ $mois = Utilitaires::getMois(date('d/m/Y'));
 $numAnnee = substr($mois, 0, 4);
 $numMois = substr($mois, 4, 2);
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
+$idVisiteur = $_SESSION['idVisiteur'];
 switch ($action) {
     case 'afficherVisiteurs':
         $visiteurs = $pdo->getAllVisiteur();
-        include PATH_VIEWS . 'v_listeVisiteursComptable.php';
+        include PATH_VIEWS .'v_listeVisiteursComptable.php';
         break;
     case 'selectionnerMois':
         if (isset($_POST['visiteur'])) {
@@ -20,10 +20,10 @@ switch ($action) {
 
             if ($visiteurId) {
                 $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
-                include 'vues/v_listeMoisComptable.php';
+                include PATH_VIEWS .'v_listeMoisComptable.php';
             } else {
                 $messageErreur = "Visiteur introuvable";
-                include 'vues/v_erreurs.php';
+                include PATH_VIEWS .'v_erreurs.php';
             }
         }
         break;
@@ -36,10 +36,10 @@ switch ($action) {
             if ($visiteurId) {
                 $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
                 $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
-                include 'vues/v_etatFraisComptable.php';
+                include PATH_VIEWS .'v_etatFraisComptable.php';
             } else {
                 $messageErreur = "Données invalides.";
-                include 'vues/v_erreurs.php';
+                include PATH_VIEWS .'v_erreurs.php';
             }
         }
         break;
@@ -54,7 +54,7 @@ switch ($action) {
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
-            include 'vues/v_etatFraisComptable.php';
+            include PATH_VIEWS .'v_etatFraisComptable.php';
         }
         break;
     case 'reinitialiserFrais':
@@ -67,7 +67,7 @@ switch ($action) {
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
-            include 'vues/v_etatFraisComptable.php';
+            include PATH_VIEWS .'v_etatFraisComptable.php';
         }
         break;
     case 'genererPDF':
@@ -79,7 +79,7 @@ switch ($action) {
         }
         break;
     default:
-        include 'vues/v_accueil.php';
+        include PATH_VIEWS .'v_accueil.php';
         break;
 }
 

@@ -665,4 +665,20 @@ class PdoGsb
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
+
+    public function getMoisCloturesVisiteur($idVisiteur)
+    {
+        $requetePrepare = $this->connexion->prepare (
+            'SELECT mois '
+            . 'FROM fichefrais'
+            . " WHERE idvisiteur = :unIdvisiteur AND idetat = 'CL' "
+        );
+        $requetePrepare->bindParam(':unIdvisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+
+
 }
