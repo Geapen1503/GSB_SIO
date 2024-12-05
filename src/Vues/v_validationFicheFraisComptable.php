@@ -35,7 +35,7 @@ if (isset($_POST['visiteur'])) {
         echo "Le visiteur sélectionné est : " . htmlspecialchars($visiteurLogin);
         $visiteurValide = true;
 
-        $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
+        $visiteurMonths = $pdo->getAllMoisVisiteur($visiteurId);
     }
 } else {
     $visiteurValide = false;
