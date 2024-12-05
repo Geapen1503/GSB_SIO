@@ -33,18 +33,21 @@ switch ($action) {
         $visiteur = $pdo->getInfosVisiteur($login);
         $comptable = $pdo->getInfosComptable($login);
 
+        $comptablePassword = password_verify($mdp,$pdo->getMdpComptable($login) ?? '');
+        if (!$comptablePassword) $visiteurPassword = password_verify($mdp,$pdo->getMdpVisiteur($login) ?? '');
+
         if (!password_verify($mdp,$pdo->getMdpVisiteur($login) ?? '') && !password_verify($mdp,$pdo->getMdpComptable($login) ?? '')) {
             Utilitaires::ajouterErreur('Login ou mot de passe incorrect');
             include PATH_VIEWS . 'v_erreurs.php';
             include PATH_VIEWS . 'v_connexion.php';
-        } elseif (password_verify($mdp,$pdo->getMdpVisiteur($login) ?? '')) {
+        } elseif ($visiteurPassword) {
             $id = $visiteur['id'];
             $nom = $visiteur['nom'];
             $prenom = $visiteur['prenom'];
             Utilitaires::connecter($id, $nom, $prenom);
             $_SESSION['typeUtilisateur'] = 'visiteur';
             header('Location: index.php?uc=accueil');
-        } else {
+        } elseif ($comptablePassword) {
             $id = $comptable['id'];
             $nom = $comptable['nom'];
             $prenom = $comptable['prenom'];
