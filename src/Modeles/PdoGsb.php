@@ -39,12 +39,14 @@
 
 namespace Modeles;
 
-use fpdf\FPDF;
+use FPDF;
 use PDO;
 use Outils\Utilitaires;
 
 require '../config/bdd.php';
 require '../libs/fpdf/fpdf.php';
+//require_once '../vendor/autoload.php';
+
 
 class PdoGsb
 {
@@ -683,14 +685,16 @@ class PdoGsb
     }
 
     public function generatePdf() {
+        ob_start();
         $pdf = new FPDF();
         $pdf->AddPage();
-
-        $pdf->SetFont('Arial','B',16);
-        $pdf->Cell(40,10,'Hello World!');
-
-        $pdf->Output(__DIR__ . '/testsuccess.pdf', 'F');
+        $pdf->SetFont('Arial', 'B', 16);
+        $pdf->Cell(40, 10, 'Hello World!');
+        $pdf->Output("RapportFrais.pdf", "D");
+        ob_end_clean();
     }
+
+
 
 
 }

@@ -1,17 +1,14 @@
 <?php
-
-use fpdf\FPDF;
-
 require('../fpdf.php');
 
 class PDF extends FPDF
 {
 protected $col = 0; // Colonne courante
-protected $y0;      // Ordonnï¿½e du dï¿½but des colonnes
+protected $y0;      // Ordonnée du début des colonnes
 
 function Header()
 {
-	// En-tï¿½te
+	// En-tête
 	global $titre;
 
 	$this->SetFont('Arial','B',15);
@@ -23,7 +20,7 @@ function Header()
 	$this->SetLineWidth(1);
 	$this->Cell($w,9,$titre,1,1,'C',true);
 	$this->Ln(10);
-	// Sauvegarde de l'ordonnï¿½e
+	// Sauvegarde de l'ordonnée
 	$this->y0 = $this->GetY();
 }
 
@@ -47,19 +44,19 @@ function SetCol($col)
 
 function AcceptPageBreak()
 {
-	// Mï¿½thode autorisant ou non le saut de page automatique
+	// Méthode autorisant ou non le saut de page automatique
 	if($this->col<2)
 	{
-		// Passage ï¿½ la colonne suivante
+		// Passage à la colonne suivante
 		$this->SetCol($this->col+1);
-		// Ordonnï¿½e en haut
+		// Ordonnée en haut
 		$this->SetY($this->y0);
 		// On reste sur la page
 		return false;
 	}
 	else
 	{
-		// Retour en premiï¿½re colonne
+		// Retour en première colonne
 		$this->SetCol(0);
 		// Saut de page
 		return true;
@@ -73,7 +70,7 @@ function TitreChapitre($num, $libelle)
 	$this->SetFillColor(200,220,255);
 	$this->Cell(0,6,"Chapitre $num : $libelle",0,1,'L',true);
 	$this->Ln(4);
-	// Sauvegarde de l'ordonnï¿½e
+	// Sauvegarde de l'ordonnée
 	$this->y0 = $this->GetY();
 }
 
@@ -89,7 +86,7 @@ function CorpsChapitre($fichier)
 	// Mention
 	$this->SetFont('','I');
 	$this->Cell(0,5,"(fin de l'extrait)");
-	// Retour en premiï¿½re colonne
+	// Retour en première colonne
 	$this->SetCol(0);
 }
 
@@ -102,11 +99,11 @@ function AjouterChapitre($num, $titre, $fichier)
 }
 }
 
-$pdf = new \fpdf\tutorial\PDF();
+$pdf = new PDF();
 $titre = 'Vingt mille lieues sous les mers';
 $pdf->SetTitle($titre);
 $pdf->SetAuthor('Jules Verne');
-$pdf->AjouterChapitre(1,'UN ï¿½CUEIL FUYANT','20k_c1.txt');
+$pdf->AjouterChapitre(1,'UN ÉCUEIL FUYANT','20k_c1.txt');
 $pdf->AjouterChapitre(2,'LE POUR ET LE CONTRE','20k_c2.txt');
 $pdf->Output();
 ?>

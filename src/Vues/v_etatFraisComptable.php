@@ -43,6 +43,9 @@
     </table>
 
     <form method="POST" action="index.php?uc=gererFraisComptable&action=genererPDF">
+        <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+        <input type="hidden" name="mois" value="<?php echo htmlspecialchars($mois); ?>">
         <button type="submit" class="btn btn-primary">Générer le PDF</button>
     </form>
+
 </div>

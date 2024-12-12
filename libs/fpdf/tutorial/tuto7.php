@@ -1,13 +1,11 @@
 <?php
-
-use fpdf\FPDF;
-
+define('FPDF_FONTPATH','.');
 require('../fpdf.php');
 
 $pdf = new FPDF();
-$pdf->AddFont('CevicheOne','','CevicheOne-Regular.php','.');
+$pdf->AddFont('Calligrapher','','calligra.php');
 $pdf->AddPage();
-$pdf->SetFont('CevicheOne','',45);
-$pdf->Write(10,'Changez de police avec FPDF !');
+$pdf->SetFont('Calligrapher','',35);
+$pdf->Cell(0,10,'Changez de police avec FPDF !');
 $pdf->Output();
 ?>
