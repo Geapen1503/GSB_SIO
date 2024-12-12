@@ -684,17 +684,91 @@ class PdoGsb
 
     }
 
-    public function generatePdf() {
-        ob_start();
-        $pdf = new FPDF();
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 16);
-        $pdf->Cell(40, 10, 'Hello World!');
-        $pdf->Output("RapportFrais.pdf", "D");
-        ob_end_clean();
+    public function getMontantUnitaire($idFrais): float
+    {
+        $requetePrepare = $this->connexion->prepare(
+            'SELECT montant FROM fraisforfait WHERE id = :idFrais'
+        );
+        $requetePrepare->bindParam(':idFrais', $idFrais, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $result = $requetePrepare->fetch();
+        return $result['montant'] ?? 0.0;
     }
 
+    public function generatePdf($idVisiteur, $mois)
+    {
+        ob_start();
+        $lesFraisForfait = $this->getLesFraisForfait($idVisiteur, $mois);
+        $lesFraisHorsForfait = $this->getLesFraisHorsForfait($idVisiteur, $mois);
 
+        $pdf = new FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 14);
 
+        $pdf->Cell(0, 10, mb_convert_encoding('REMBOURSEMENT DE FRAIS ENGAGES', 'ISO-8859-1', 'UTF-8'), 0, 1, 'C');
+
+        $pdf->Ln(10);
+
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Visiteur : ' . $idVisiteur);
+        $pdf->Ln(6);
+        $pdf->Cell(40, 10, 'Mois : ' . Utilitaires::moisEnFrancais($mois));
+        $pdf->Ln(10);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(70, 7, 'Frais Forfaitaires', 1, 0, 'C');
+        $pdf->Cell(30, 7, 'Quantité', 1, 0, 'C');
+        $pdf->Cell(40, 7, 'Montant unitaire', 1, 0, 'C');
+        $pdf->Cell(40, 7, 'Total', 1, 1, 'C');
+
+        $pdf->SetFont('Arial', '', 12);
+        $totalForfait = 0;
+        foreach ($lesFraisForfait as $frais) {
+            $quantite = $frais['quantite'];
+            $montantUnitaire = $this->getMontantUnitaire($frais['idfrais']);
+            $total = $quantite * $montantUnitaire;
+            $totalForfait += $total;
+
+            $pdf->Cell(70, 7,  mb_convert_encoding($frais['libelle'], 'ISO-8859-1', 'UTF-8'), 1);
+            $pdf->Cell(30, 7, $quantite, 1, 0, 'R');
+            $pdf->Cell(40, 7, number_format($montantUnitaire, 2, ',', ' '), 1, 0, 'R');
+            $pdf->Cell(40, 7, number_format($total, 2, ',', ' '), 1, 1, 'R');
+        }
+
+        $pdf->Ln(5);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(40, 7, 'Date', 1, 0, 'C');
+        $pdf->Cell(100, 7, mb_convert_encoding('Libellé', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
+        $pdf->Cell(40, 7, 'Montant', 1, 1, 'C');
+
+        $pdf->SetFont('Arial', '', 12);
+        $totalHorsForfait = 0;
+        foreach ($lesFraisHorsForfait as $frais) {
+            $totalHorsForfait += $frais['montant'];
+
+            $pdf->Cell(40, 7, $frais['date'], 1);
+            $pdf->Cell(100, 7, mb_convert_encoding($frais['libelle'], 'ISO-8859-1', 'UTF-8'), 1);
+            $pdf->Cell(40, 7, number_format($frais['montant'], 2, ',', ' '), 1, 1, 'R');
+        }
+
+        $pdf->Ln(5);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(150, 7, 'TOTAL ' . substr($mois, 4, 2) . '/' . substr($mois, 0, 4), 1);
+        $pdf->Cell(40, 7, number_format($totalForfait + $totalHorsForfait, 2, ',', ' '), 1, 1, 'R');
+
+        ob_clean();
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="RapportFrais.pdf"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . strlen($pdf->Output('S')));
+        $pdf->Output('D');
+        exit;
+
+    }
 
 }

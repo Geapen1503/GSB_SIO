@@ -75,7 +75,12 @@ switch ($action) {
             $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
             $mois = $_POST['mois'];
 
-            $pdo->generatePdf();
+            if ($visiteurId) {
+                $pdo->generatePdf($visiteurId, $mois);
+            } else {
+                $messageErreur = "Visiteur introuvable ou mois invalide.";
+                include PATH_VIEWS . 'v_erreurs.php';
+            }
         }
         break;
     default:
