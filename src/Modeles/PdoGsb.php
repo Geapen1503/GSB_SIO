@@ -133,6 +133,14 @@ class PdoGsb
         return $result ? $result : [];
     }
 
+    /**
+     * Met à jour les mots de passe de tous les visiteurs avec un mot de passe haché.
+     *
+     * Cette fonction récupère tous les visiteurs de la base de données, hache leur mot de passe et met à jour le champ
+     * correspondant dans la table `visiteur`.
+     *
+     * @return void
+     */
     public function setMdpVisiteur() {
         $requetePrepare = $this->connexion->prepare(
             'SELECT id, mdp '
@@ -152,6 +160,14 @@ class PdoGsb
         }
     }
 
+    /**
+     * Récupère le mot de passe haché d'un visiteur à partir de son login.
+     *
+     * Cette fonction retourne le mot de passe haché d'un visiteur donné, en fonction de son login.
+     *
+     * @param string $login Le login du visiteur pour lequel récupérer le mot de passe.
+     * @return string Le mot de passe haché du visiteur.
+     */
     public function getMdpVisiteur($login) {
         $requetePrepare = $this->connexion->prepare(
             'SELECT mdp '
@@ -163,6 +179,14 @@ class PdoGsb
         return $requetePrepare->fetch(PDO::FETCH_OBJ)->mdp;
     }
 
+    /**
+     * Met à jour les mots de passe de tous les comptables avec un mot de passe haché.
+     *
+     * Cette fonction récupère tous les comptables de la base de données, hache leur mot de passe et met à jour le champ
+     * correspondant dans la table `comptable`.
+     *
+     * @return void
+     */
     public function setMdpComptable() {
         $requetePrepare = $this->connexion->prepare(
             'SELECT id, mdp '
@@ -182,6 +206,14 @@ class PdoGsb
         }
     }
 
+    /**
+     * Récupère le mot de passe haché d'un comptable à partir de son login.
+     *
+     * Cette fonction retourne le mot de passe haché d'un comptable donné, en fonction de son login.
+     *
+     * @param string $login Le login du comptable pour lequel récupérer le mot de passe.
+     * @return string Le mot de passe haché du comptable.
+     */
     public function getMdpComptable($login) {
         $requetePrepare = $this->connexion->prepare(
             'SELECT mdp '
@@ -193,6 +225,13 @@ class PdoGsb
         return $requetePrepare->fetch(PDO::FETCH_OBJ)->mdp;
     }
 
+    /**
+     * Récupère tous les visiteurs de la base de données.
+     *
+     * Cette fonction retourne une liste de tous les visiteurs, avec leurs noms, prénoms et logins.
+     *
+     * @return array Un tableau associatif contenant les informations des visiteurs (nom, prénom, login).
+     */
     public function getAllVisiteur()
     {
         $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom, visiteur.login FROM visiteur');
@@ -342,6 +381,16 @@ class PdoGsb
         $requetePrepare->execute();
     }
 
+    /**
+     * Réinitialise les frais forfaitaires pour un visiteur et un mois donnés.
+     *
+     * Cette fonction met à zéro la quantité des frais forfaitaires pour un visiteur donné et un mois spécifique,
+     * dans la table `lignefraisforfait`.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel réinitialiser les frais forfaitaires.
+     * @param string $mois Le mois pour lequel réinitialiser les frais forfaitaires.
+     * @return void
+     */
     public function resetLesFraisForfait($idVisiteur, $mois): void {
         $requeteSQL = 'UPDATE lignefraisforfait SET quantite = 0 WHERE idvisiteur = :idVisiteur AND mois = :mois';
         $requetePrepare = $this->connexion->prepare($requeteSQL);
@@ -350,6 +399,18 @@ class PdoGsb
         $requetePrepare->execute();
     }
 
+    /**
+     * Met à jour les frais hors forfait pour un visiteur et un mois donnés.
+     *
+     * Cette fonction met à jour les frais hors forfait pour un visiteur et un mois donnés.
+     * Pour chaque frais hors forfait, elle modifie la date, le libellé et le montant dans la base de données.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel mettre à jour les frais hors forfait.
+     * @param string $mois Le mois pour lequel mettre à jour les frais hors forfait.
+     * @param array $lesFraisHorsForfait Un tableau associatif contenant les frais hors forfait à mettre à jour.
+     *                                    Chaque élément contient la date, le libellé et le montant du frais.
+     * @return void
+     */
     public function setLesFraisHorsForfait($idVisiteur, $mois, $lesFraisHorsForfait): void {
         foreach ($lesFraisHorsForfait as $idFraisHorsForfait => $frais) {
             $requeteSQL = 'UPDATE lignefraishorsforfait 
@@ -367,6 +428,16 @@ class PdoGsb
         }
     }
 
+    /**
+     * Réinitialise les frais hors forfait pour un visiteur et un mois donnés.
+     *
+     * Cette fonction supprime tous les frais hors forfait pour un visiteur donné et un mois spécifique
+     * de la table `lignefraishorsforfait`.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel réinitialiser les frais hors forfait.
+     * @param string $mois Le mois pour lequel réinitialiser les frais hors forfait.
+     * @return void
+     */
     public function resetLesFraisHorsForfait($idVisiteur, $mois): void {
         $requeteSQL = 'DELETE FROM lignefraishorsforfait WHERE idvisiteur = :idVisiteur AND mois = :mois';
         $requetePrepare = $this->connexion->prepare($requeteSQL);
@@ -670,6 +741,15 @@ class PdoGsb
         $requetePrepare->execute();
     }
 
+    /**
+     * Récupère les mois de frais clôturés pour un visiteur donné.
+     *
+     * Cette fonction retourne tous les mois durant lesquels un visiteur donné a des frais clôturés
+     * (état 'CL' dans la base de données).
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel récupérer les mois de frais clôturés.
+     * @return array Un tableau associatif contenant les mois de frais clôturés pour le visiteur.
+     */
     public function getMoisCloturesVisiteur($idVisiteur)
     {
         $requetePrepare = $this->connexion->prepare (
@@ -684,6 +764,15 @@ class PdoGsb
 
     }
 
+    /**
+     * Récupère le montant unitaire d'un frais forfaitaire.
+     *
+     * Cette fonction retourne le montant d'un frais forfaitaire spécifique, en utilisant son ID dans la base de données.
+     * Si aucun montant n'est trouvé, la fonction retourne 0.0.
+     *
+     * @param string $idFrais L'identifiant du frais forfaitaire pour lequel récupérer le montant.
+     * @return float Le montant unitaire du frais, ou 0.0 si le frais n'existe pas.
+     */
     public function getMontantUnitaire($idFrais): float
     {
         $requetePrepare = $this->connexion->prepare(
@@ -695,7 +784,17 @@ class PdoGsb
         return $result['montant'] ?? 0.0;
     }
 
-    public function generatePdf($idVisiteur, $mois) // Note: make this function thinner if possible
+    /**
+     * Génère un PDF de remboursement de frais pour un visiteur et un mois donnés.
+     * Si le PDF a déjà été généré pour ce visiteur et ce mois, il est récupéré depuis la base de données
+     * et envoyé directement au client pour téléchargement. Sinon, le PDF est généré et stocké dans la base de données,
+     * puis envoyé au client.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel le PDF est généré.
+     * @param string $mois Le mois pour lequel le PDF est généré, au format YYYYMM.
+     * @return void
+     */
+    public function generatePdf($idVisiteur, $mois) // Note: make this function thinner if possible if not makes other function that you call inside this one
     {
         $requetePrepare = $this->connexion->prepare(
             'SELECT pdf_content FROM pdf_reports WHERE id_visiteur = :idVisiteur AND mois = :mois'
