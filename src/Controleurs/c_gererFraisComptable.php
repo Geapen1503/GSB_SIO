@@ -72,10 +72,10 @@ switch ($action) {
         break;
     case 'genererPDF':
         if (isset($_POST['visiteur'], $_POST['mois'])) {
-            $visiteurLogin = $_POST['visiteur'];
+            $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
             $mois = $_POST['mois'];
 
-            include '../tools/generate_pdf.php';
+            $pdo->generatePdf();
         }
         break;
     default:
