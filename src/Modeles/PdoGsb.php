@@ -695,8 +695,29 @@ class PdoGsb
         return $result['montant'] ?? 0.0;
     }
 
-    public function generatePdf($idVisiteur, $mois)
+    public function generatePdf($idVisiteur, $mois) // Note: make this function thinner if possible
     {
+        $requetePrepare = $this->connexion->prepare(
+            'SELECT pdf_content FROM pdf_reports WHERE id_visiteur = :idVisiteur AND mois = :mois'
+        );
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $result = $requetePrepare->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $pdfContent = $result['pdf_content'];
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="RapportFrais.pdf"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . strlen($pdfContent));
+            echo $pdfContent;
+            exit;
+        }
+
         ob_start();
         $lesFraisForfait = $this->getLesFraisForfait($idVisiteur, $mois);
         $lesFraisHorsForfait = $this->getLesFraisHorsForfait($idVisiteur, $mois);
@@ -706,7 +727,6 @@ class PdoGsb
         $pdf->SetFont('Arial', 'B', 14);
 
         $pdf->Cell(0, 10, mb_convert_encoding('REMBOURSEMENT DE FRAIS ENGAGES', 'ISO-8859-1', 'UTF-8'), 0, 1, 'C');
-
         $pdf->Ln(10);
 
         $pdf->SetFont('Arial', '', 12);
@@ -758,17 +778,26 @@ class PdoGsb
         $pdf->Cell(150, 7, 'TOTAL ' . substr($mois, 4, 2) . '/' . substr($mois, 0, 4), 1);
         $pdf->Cell(40, 7, number_format($totalForfait + $totalHorsForfait, 2, ',', ' '), 1, 1, 'R');
 
-        ob_clean();
+        $pdfContent = $pdf->Output('S');
+
+        $requetePrepare = $this->connexion->prepare(
+            'INSERT INTO pdf_reports (id_visiteur, mois, pdf_content) VALUES (:idVisiteur, :mois, :pdfContent)'
+        );
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':pdfContent', $pdfContent, PDO::PARAM_LOB);
+        $requetePrepare->execute();
+
         header('Content-Description: File Transfer');
         header('Content-Type: application/pdf');
         header('Content-Disposition: attachment; filename="RapportFrais.pdf"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
-        header('Content-Length: ' . strlen($pdf->Output('S')));
-        $pdf->Output('D');
+        header('Content-Length: ' . strlen($pdfContent));
+        echo $pdfContent;
         exit;
-
     }
+
 
 }
