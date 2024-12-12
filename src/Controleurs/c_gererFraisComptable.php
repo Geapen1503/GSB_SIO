@@ -11,7 +11,7 @@ $idVisiteur = $_SESSION['idVisiteur'];
 switch ($action) {
     case 'afficherVisiteurs':
         $visiteurs = $pdo->getAllVisiteur();
-        include PATH_VIEWS .'v_listeVisiteursComptable.php';
+        include PATH_VIEWS .'v_listeVisiteursMoisComptable.php';
         break;
     case 'selectionnerMois':
         if (isset($_POST['visiteur'])) {
@@ -20,54 +20,80 @@ switch ($action) {
 
             if ($visiteurId) {
                 $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
-                include PATH_VIEWS .'v_listeMoisComptable.php';
+                $visiteurSelectionne = $visiteurLogin; // Stockage du visiteur sélectionné
+                include PATH_VIEWS . 'v_listeVisiteursMoisComptable.php';
             } else {
-                $messageErreur = "Visiteur introuvable";
-                include PATH_VIEWS .'v_erreurs.php';
+                $messageErreur = "Visiteur introuvable.";
+                include PATH_VIEWS . 'v_erreurs.php';
             }
+        } if (isset($_POST['mois'], $_POST['visiteur'])) {
+            $mois = $_POST['mois'];
+            $visiteurLogin = $_POST['visiteur'];
+
+            // Récupérer les frais et autres informations liées au mois et au visiteur
+            $lesFraisForfait = $pdo->getLesFraisForfait($visiteurLogin, $mois);
+            $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurLogin, $mois);
+
+            // Assigner les valeurs pour afficher la vue de l'état des frais
+            $moisSelectionne = $mois;
+            $visiteurSelectionne = $visiteurLogin;
         }
-        break;
+
     case 'afficherFicheFrais':
-        if (isset($_POST['visiteur']) && isset($_POST['mois'])) {
+        if (isset($_POST['visiteur'], $_POST['mois'])) {
             $visiteurLogin = $_POST['visiteur'];
             $mois = $_POST['mois'];
             $visiteurId = $pdo->getVisiteurId($visiteurLogin);
 
             if ($visiteurId) {
+                // Récupérer les données nécessaires
+                $visiteurs = $pdo->getAllVisiteur();
+                $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
                 $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
                 $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
-                include PATH_VIEWS .'v_etatFraisComptable.php';
+
+                // Variables pour la sélection
+                $visiteurSelectionne = $visiteurLogin;
+                $moisSelectionne = $mois;
+
+                // Inclure la vue avec les variables nécessaires
+                include PATH_VIEWS . 'v_etatFraisComptable.php';
             } else {
                 $messageErreur = "Données invalides.";
-                include PATH_VIEWS .'v_erreurs.php';
+                include PATH_VIEWS . 'v_erreurs.php';
             }
         }
         break;
-    case 'corrigerFrais':
+    case 'corrigerFraisForfait':
         if (isset($_POST['visiteur'], $_POST['mois'], $_POST['lesFrais'])) {
             $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
             $mois = $_POST['mois'];
-            $frais = $_POST['lesFrais'];
+            $lesFrais = $_POST['lesFrais'];
 
-            $pdo->setLesFraisForfait($visiteurId, $mois, $frais);
+            // Mise à jour des frais forfaitisés
+            $pdo->setLesFraisForfait($visiteurId, $mois, $lesFrais);
 
+            // Actualisation de la vue
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
-            include PATH_VIEWS .'v_etatFraisComptable.php';
+            include PATH_VIEWS . 'v_etatFraisComptable.php';
         }
         break;
-    case 'reinitialiserFrais':
+
+    case 'reinitialiserFraisForfait':
         if (isset($_POST['visiteur'], $_POST['mois'])) {
             $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
             $mois = $_POST['mois'];
 
+            // Réinitialisation des frais forfaitisés
             $pdo->resetLesFraisForfait($visiteurId, $mois);
 
+            // Actualisation de la vue
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
-            include PATH_VIEWS .'v_etatFraisComptable.php';
+            include PATH_VIEWS . 'v_etatFraisComptable.php';
         }
         break;
     case 'genererPDF':

@@ -79,3 +79,24 @@ code {
 #espace{
     margin-top: 50px;
 }
+.vertical-form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.vertical-form-group label {
+    margin-bottom: 5px;
+}
+
+.vertical-form-group input {
+    padding: 5px;
+    max-width: 130px; /* Limite la largeur maximale */
+    box-sizing: border-box;
+}
+.separator-line {
+    border: none;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 20px 0;
+}

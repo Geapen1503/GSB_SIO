@@ -334,7 +334,6 @@ class PdoGsb
         }
         $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
-
         $requetePrepare->execute();
     }
 
