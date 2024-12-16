@@ -66,36 +66,69 @@ switch ($action) {
         break;
     case 'corrigerFraisForfait':
         if (isset($_POST['visiteur'], $_POST['mois'], $_POST['lesFrais'])) {
-            $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
+            $visiteurLogin = $_POST['visiteur'];
             $mois = $_POST['mois'];
             $lesFrais = $_POST['lesFrais'];
+
+            // Récupérer l'ID visiteur
+            $visiteurId = $pdo->getVisiteurId($visiteurLogin);
 
             // Mise à jour des frais forfaitisés
             $pdo->setLesFraisForfait($visiteurId, $mois, $lesFrais);
 
-            // Actualisation de la vue
+            // Récupérer les données mises à jour pour les afficher à nouveau
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
+            // Passer à nouveau les informations pour réafficher les champs de sélection
+            $visiteurs = $pdo->getAllVisiteur();
+            $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
+
+            // Variables de sélection
+            $visiteurSelectionne = $visiteurLogin;
+            $moisSelectionne = $mois;
+
+            // Inclure la vue
             include PATH_VIEWS . 'v_etatFraisComptable.php';
         }
         break;
-
-    case 'reinitialiserFraisForfait':
-        if (isset($_POST['visiteur'], $_POST['mois'])) {
-            $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
+   
+    case 'corrigerFraisHorsForfait':
+        if (isset($_POST['visiteur'], $_POST['mois'], $_POST['idFrais'], $_POST['date'], $_POST['libelle'], $_POST['montant'])) {
+            $visiteurLogin = $_POST['visiteur'];
             $mois = $_POST['mois'];
+            $idFrais = $_POST['idFrais'];
 
-            // Réinitialisation des frais forfaitisés
-            $pdo->resetLesFraisForfait($visiteurId, $mois);
+            // Récupérer l'ID visiteur
+            $visiteurId = $pdo->getVisiteurId($visiteurLogin);
 
-            // Actualisation de la vue
+            // Préparer les nouvelles données pour le frais hors forfait
+            $nouveauFrais = [
+                'date' => $_POST['date'],
+                'libelle' => $_POST['libelle'],
+                'montant' => $_POST['montant']
+            ];
+
+            // Mettre à jour le frais hors forfait dans la base de données
+            $pdo->setLesFraisHorsForfait($visiteurId, $mois, [$idFrais => $nouveauFrais]);
+
+            // Récupérer les données mises à jour pour les afficher à nouveau
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
+            // Passer à nouveau les informations pour réafficher les champs de sélection
+            $visiteurs = $pdo->getAllVisiteur();
+            $visiteurMonths = $pdo->getMoisCloturesVisiteur($visiteurId);
+
+            // Variables de sélection
+            $visiteurSelectionne = $visiteurLogin;
+            $moisSelectionne = $mois;
+
+            // Inclure la vue
             include PATH_VIEWS . 'v_etatFraisComptable.php';
         }
         break;
+
     case 'genererPDF':
         if (isset($_POST['visiteur'], $_POST['mois'])) {
             $visiteurLogin = $_POST['visiteur'];

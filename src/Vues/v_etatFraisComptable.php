@@ -14,19 +14,16 @@
                             <input type="text" 
                                    name="lesFrais[<?php echo htmlspecialchars($frais['idfrais']); ?>]" 
                                    value="<?php echo htmlspecialchars($frais['quantite']); ?>" 
+                                   data-original-value="<?php echo htmlspecialchars($frais['quantite']); ?>" 
                                    class="form-control">
                         </div>
                     <?php endforeach; ?>
                     <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurSelectionne); ?>">
                     <input type="hidden" name="mois" value="<?php echo htmlspecialchars($moisSelectionne); ?>">
-                    <button type="submit" class="btn btn-success" name="action" value="corriger">Corriger</button>
+                    <button type="submit" class="btn btn-success">Corriger</button>
                 </fieldset>
             </form>
-            <form method="POST" action="index.php?uc=gererFraisComptable&action=reinitialiserFraisForfait">
-                <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurSelectionne); ?>">
-                <input type="hidden" name="mois" value="<?php echo htmlspecialchars($moisSelectionne); ?>">
-                <button type="submit" name="action" value="reinitialiser" class="btn btn-danger">Réinitialiser</button>
-            </form>
+            <button type="button" class="btn btn-danger btn-reinitialiser">Réinitialiser</button>
         </div>
     </div>
 </div>
@@ -46,32 +43,32 @@
             </thead>
             <tbody>
                 <?php foreach ($lesFraisHorsForfait as $fraisHors) : ?>
-                <tr>
-                <form method="POST">
+                    <tr>
+            <form method="POST" action="index.php?uc=gererFraisComptable&action=corrigerFraisHorsForfait">
                     <td class="date">
-                        <input type="text" name="dateFrais[<?php echo htmlspecialchars($fraisHors['date']); ?>]" value="<?php echo htmlspecialchars($fraisHors['date']); ?>" class="form-control">
+                        <input type="text" name="dateFrais[<?php echo htmlspecialchars($fraisHors['date']); ?>]" 
+                               value="<?php echo htmlspecialchars($fraisHors['date']); ?>" 
+                               data-original-value="<?php echo htmlspecialchars($fraisHors['date']); ?>" 
+                               class="form-control">
                     </td>
                     <td class="libelle">
-                        <input type="text" name="libelleFrais[<?php echo htmlspecialchars($fraisHors['libelle']); ?>]" value="<?php echo htmlspecialchars($fraisHors['libelle']); ?>" class="form-control">
+                        <input type="text" name="libelleFrais[<?php echo htmlspecialchars($fraisHors['libelle']); ?>]" 
+                               value="<?php echo htmlspecialchars($fraisHors['libelle']); ?>" 
+                               data-original-value="<?php echo htmlspecialchars($fraisHors['libelle']); ?>" 
+                               class="form-control">
                     </td>
                     <td class="montant">
-                        <input type="text" name="montantFrais[<?php echo htmlspecialchars($fraisHors['montant']); ?>]" value="<?php echo htmlspecialchars($fraisHors['montant']); ?>" class="form-control">
+                        <input type="text" name="montantFrais[<?php echo htmlspecialchars($fraisHors['montant']); ?>]" 
+                               value="<?php echo htmlspecialchars($fraisHors['montant']); ?>" 
+                               data-original-value="<?php echo htmlspecialchars($fraisHors['montant']); ?>" 
+                               class="form-control">
                     </td>
                     <td>
-                    <form method="POST" action="index.php?uc=gererFraisComptable&action=corrigerFrais">
-                            <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurSelectionne); ?>">
-                            <input type="hidden" name="mois" value="<?php echo htmlspecialchars($moisSelectionne); ?>">
-                            <input type="hidden" name="idFrais" value="<?php echo htmlspecialchars($idFrais); ?>">
-                            <!-- Champs pour date, libelle, montant -->
-                            <button type="submit" name="action" value="corriger" class="btn btn-success">Corriger</button>
-                        </form>
-
-                        <form method="POST" action="index.php?uc=gererFraisComptable&action=reinitialiserFrais">
-                            <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurSelectionne); ?>">
-                            <input type="hidden" name="mois" value="<?php echo htmlspecialchars($moisSelectionne); ?>">
-                            <input type="hidden" name="idFrais" value="<?php echo htmlspecialchars($idFrais); ?>">
-                            <button type="submit" name="action" value="reinitialiser" class="btn btn-danger">Réinitialiser</button>
-                    </form>
+                        <input type="hidden" name="idFrais" value="<?php echo htmlspecialchars($fraisHors['id']); ?>">
+                        <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurSelectionne); ?>">
+                        <input type="hidden" name="mois" value="<?php echo htmlspecialchars($moisSelectionne); ?>">
+                        <button type="submit" class="btn btn-success">Corriger</button>
+                        <button type="button" class="btn btn-danger btn-reinitialiser">Réinitialiser</button>
                     </td>
                 </form>
                 </tr>
@@ -81,3 +78,24 @@
     </div>
 </div>
 <label for="visiteur">Nombre de justificatifs :</label>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fonction pour réinitialiser les champs de formulaire
+        function reinitialiserChamps() {
+            const inputs = document.querySelectorAll('[data-original-value]');
+            inputs.forEach(input => {
+                input.value = input.getAttribute('data-original-value'); // Remet la valeur initiale
+            });
+        }
+
+        // Attache un événement au bouton de réinitialisation
+        const boutonsReinitialiser = document.querySelectorAll('.btn-reinitialiser'); // Classe des boutons
+        boutonsReinitialiser.forEach(bouton => {
+            bouton.addEventListener('click', function (event) {
+                event.preventDefault(); // Empêche la soumission
+                reinitialiserChamps();
+            });
+        });
+    });
+</script>
