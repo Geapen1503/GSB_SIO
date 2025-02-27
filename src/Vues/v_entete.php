@@ -96,13 +96,13 @@
                                 </a>
                             </li>
                             <li <?php if ($uc == 'gererFrais') { ?>class="active"<?php } ?>>
-                                <a class="orgcomptable" href="index.php?uc=gererFrais&action=saisirFrais">
+                                <a class="orgcomptable" href="index.php?uc=gererFraisComptable&action=afficherVisiteurs">
                                     <span class="glyphicon glyphicon-euro"></span>
                                     Valider les fiches de frais
                                 </a>
                             </li>
                             <li <?php if ($uc == 'etatFrais') { ?>class="active"<?php } ?>>
-                                <a class="orgcomptable" href="index.php?uc=etatFrais&action=selectionnerMois">
+                                <a class="orgcomptable" href="index.php?uc=etatFraisComptable&action=selectionnerVisiteur">
                                     <span class="glyphicon glyphicon-euro"></span>
                                     Suivre le paiement des fiches de frais
                                 </a>

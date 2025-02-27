@@ -81,6 +81,15 @@ CREATE TABLE IF NOT EXISTS lignefraishorsforfait (
   FOREIGN KEY (idvisiteur, mois) REFERENCES fichefrais(idvisiteur, mois)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS pdf_reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_visiteur VARCHAR(20) NOT NULL,
+    mois CHAR(6) NOT NULL,
+    pdf_content LONGBLOB NOT NULL,
+    date_generation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY (id_visiteur, mois)
+);
+
 -- Alimentation des données paramètres
 INSERT INTO fraisforfait (id, libelle, montant) VALUES
 ('ETP', 'Forfait Etape', 110.00),

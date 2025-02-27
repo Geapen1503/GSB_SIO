@@ -39,10 +39,14 @@
 
 namespace Modeles;
 
+use FPDF;
 use PDO;
 use Outils\Utilitaires;
 
 require '../config/bdd.php';
+require '../libs/fpdf/fpdf.php';
+//require_once '../vendor/autoload.php';
+
 
 class PdoGsb
 {
@@ -129,6 +133,14 @@ class PdoGsb
         return $result ? $result : [];
     }
 
+    /**
+     * Met à jour les mots de passe de tous les visiteurs avec un mot de passe haché.
+     *
+     * Cette fonction récupère tous les visiteurs de la base de données, hache leur mot de passe et met à jour le champ
+     * correspondant dans la table `visiteur`.
+     *
+     * @return void
+     */
     public function setMdpVisiteur() {
         $requetePrepare = $this->connexion->prepare(
             'SELECT id, mdp '
@@ -148,6 +160,14 @@ class PdoGsb
         }
     }
 
+    /**
+     * Récupère le mot de passe haché d'un visiteur à partir de son login.
+     *
+     * Cette fonction retourne le mot de passe haché d'un visiteur donné, en fonction de son login.
+     *
+     * @param string $login Le login du visiteur pour lequel récupérer le mot de passe.
+     * @return string Le mot de passe haché du visiteur.
+     */
     public function getMdpVisiteur($login) {
         $requetePrepare = $this->connexion->prepare(
             'SELECT mdp '
@@ -159,6 +179,14 @@ class PdoGsb
         return $requetePrepare->fetch(PDO::FETCH_OBJ)->mdp;
     }
 
+    /**
+     * Met à jour les mots de passe de tous les comptables avec un mot de passe haché.
+     *
+     * Cette fonction récupère tous les comptables de la base de données, hache leur mot de passe et met à jour le champ
+     * correspondant dans la table `comptable`.
+     *
+     * @return void
+     */
     public function setMdpComptable() {
         $requetePrepare = $this->connexion->prepare(
             'SELECT id, mdp '
@@ -178,6 +206,14 @@ class PdoGsb
         }
     }
 
+    /**
+     * Récupère le mot de passe haché d'un comptable à partir de son login.
+     *
+     * Cette fonction retourne le mot de passe haché d'un comptable donné, en fonction de son login.
+     *
+     * @param string $login Le login du comptable pour lequel récupérer le mot de passe.
+     * @return string Le mot de passe haché du comptable.
+     */
     public function getMdpComptable($login) {
         $requetePrepare = $this->connexion->prepare(
             'SELECT mdp '
@@ -189,6 +225,13 @@ class PdoGsb
         return $requetePrepare->fetch(PDO::FETCH_OBJ)->mdp;
     }
 
+    /**
+     * Récupère tous les visiteurs de la base de données.
+     *
+     * Cette fonction retourne une liste de tous les visiteurs, avec leurs noms, prénoms et logins.
+     *
+     * @return array Un tableau associatif contenant les informations des visiteurs (nom, prénom, login).
+     */
     public function getAllVisiteur()
     {
         $requetePrepare = $this->connexion->prepare('SELECT visiteur.nom, visiteur.prenom, visiteur.login FROM visiteur');
@@ -338,6 +381,16 @@ class PdoGsb
         $requetePrepare->execute();
     }
 
+    /**
+     * Réinitialise les frais forfaitaires pour un visiteur et un mois donnés.
+     *
+     * Cette fonction met à zéro la quantité des frais forfaitaires pour un visiteur donné et un mois spécifique,
+     * dans la table `lignefraisforfait`.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel réinitialiser les frais forfaitaires.
+     * @param string $mois Le mois pour lequel réinitialiser les frais forfaitaires.
+     * @return void
+     */
     public function resetLesFraisForfait($idVisiteur, $mois): void {
         $requeteSQL = 'UPDATE lignefraisforfait SET quantite = 0 WHERE idvisiteur = :idVisiteur AND mois = :mois';
         $requetePrepare = $this->connexion->prepare($requeteSQL);
@@ -345,6 +398,54 @@ class PdoGsb
         $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
+
+    /**
+     * Met à jour les frais hors forfait pour un visiteur et un mois donnés.
+     *
+     * Cette fonction met à jour les frais hors forfait pour un visiteur et un mois donnés.
+     * Pour chaque frais hors forfait, elle modifie la date, le libellé et le montant dans la base de données.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel mettre à jour les frais hors forfait.
+     * @param string $mois Le mois pour lequel mettre à jour les frais hors forfait.
+     * @param array $lesFraisHorsForfait Un tableau associatif contenant les frais hors forfait à mettre à jour.
+     *                                    Chaque élément contient la date, le libellé et le montant du frais.
+     * @return void
+     */
+    public function setLesFraisHorsForfait($idVisiteur, $mois, $lesFraisHorsForfait): void {
+        foreach ($lesFraisHorsForfait as $idFraisHorsForfait => $frais) {
+            $requeteSQL = 'UPDATE lignefraishorsforfait 
+                       SET date = :date, libelle = :libelle, montant = :montant 
+                       WHERE id = :idFraisHorsForfait AND idvisiteur = :idVisiteur AND mois = :mois';
+
+            $requetePrepare = $this->connexion->prepare($requeteSQL);
+            $requetePrepare->bindParam(':date', $frais['date'], PDO::PARAM_STR);
+            $requetePrepare->bindParam(':libelle', $frais['libelle'], PDO::PARAM_STR);
+            $requetePrepare->bindParam(':montant', $frais['montant'], PDO::PARAM_INT);
+            $requetePrepare->bindParam(':idFraisHorsForfait', $idFraisHorsForfait, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+            $requetePrepare->execute();
+        }
+    }
+
+    /**
+     * Réinitialise les frais hors forfait pour un visiteur et un mois donnés.
+     *
+     * Cette fonction supprime tous les frais hors forfait pour un visiteur donné et un mois spécifique
+     * de la table `lignefraishorsforfait`.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel réinitialiser les frais hors forfait.
+     * @param string $mois Le mois pour lequel réinitialiser les frais hors forfait.
+     * @return void
+     */
+    public function resetLesFraisHorsForfait($idVisiteur, $mois): void {
+        $requeteSQL = 'DELETE FROM lignefraishorsforfait WHERE idvisiteur = :idVisiteur AND mois = :mois';
+        $requetePrepare = $this->connexion->prepare($requeteSQL);
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+    }
+
 
 
     /**
@@ -639,4 +740,163 @@ class PdoGsb
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }
+
+    /**
+     * Récupère les mois de frais clôturés pour un visiteur donné.
+     *
+     * Cette fonction retourne tous les mois durant lesquels un visiteur donné a des frais clôturés
+     * (état 'CL' dans la base de données).
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel récupérer les mois de frais clôturés.
+     * @return array Un tableau associatif contenant les mois de frais clôturés pour le visiteur.
+     */
+    public function getMoisCloturesVisiteur($idVisiteur)
+    {
+        $requetePrepare = $this->connexion->prepare (
+            'SELECT mois '
+            . 'FROM fichefrais'
+            . " WHERE idvisiteur = :unIdvisiteur AND idetat = 'CL' "
+        );
+        $requetePrepare->bindParam(':unIdvisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $result = $requetePrepare->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+
+    /**
+     * Récupère le montant unitaire d'un frais forfaitaire.
+     *
+     * Cette fonction retourne le montant d'un frais forfaitaire spécifique, en utilisant son ID dans la base de données.
+     * Si aucun montant n'est trouvé, la fonction retourne 0.0.
+     *
+     * @param string $idFrais L'identifiant du frais forfaitaire pour lequel récupérer le montant.
+     * @return float Le montant unitaire du frais, ou 0.0 si le frais n'existe pas.
+     */
+    public function getMontantUnitaire($idFrais): float
+    {
+        $requetePrepare = $this->connexion->prepare(
+            'SELECT montant FROM fraisforfait WHERE id = :idFrais'
+        );
+        $requetePrepare->bindParam(':idFrais', $idFrais, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $result = $requetePrepare->fetch();
+        return $result['montant'] ?? 0.0;
+    }
+
+    /**
+     * Génère un PDF de remboursement de frais pour un visiteur et un mois donnés.
+     * Si le PDF a déjà été généré pour ce visiteur et ce mois, il est récupéré depuis la base de données
+     * et envoyé directement au client pour téléchargement. Sinon, le PDF est généré et stocké dans la base de données,
+     * puis envoyé au client.
+     *
+     * @param string $idVisiteur L'identifiant du visiteur pour lequel le PDF est généré.
+     * @param string $mois Le mois pour lequel le PDF est généré, au format YYYYMM.
+     * @return void
+     */
+    public function generatePdf($idVisiteur, $mois) // Note: make this function thinner if possible if not makes other function that you call inside this one
+    {
+        $requetePrepare = $this->connexion->prepare(
+            'SELECT pdf_content FROM pdf_reports WHERE id_visiteur = :idVisiteur AND mois = :mois'
+        );
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $result = $requetePrepare->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $pdfContent = $result['pdf_content'];
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="RapportFrais.pdf"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . strlen($pdfContent));
+            echo $pdfContent;
+            exit;
+        }
+
+        ob_start();
+        $lesFraisForfait = $this->getLesFraisForfait($idVisiteur, $mois);
+        $lesFraisHorsForfait = $this->getLesFraisHorsForfait($idVisiteur, $mois);
+
+        $pdf = new FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 14);
+
+        $pdf->Cell(0, 10, mb_convert_encoding('REMBOURSEMENT DE FRAIS ENGAGES', 'ISO-8859-1', 'UTF-8'), 0, 1, 'C');
+        $pdf->Ln(10);
+
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Visiteur : ' . $idVisiteur);
+        $pdf->Ln(6);
+        $pdf->Cell(40, 10, 'Mois : ' . Utilitaires::moisEnFrancais($mois));
+        $pdf->Ln(10);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(70, 7, 'Frais Forfaitaires', 1, 0, 'C');
+        $pdf->Cell(30, 7, 'Quantité', 1, 0, 'C');
+        $pdf->Cell(40, 7, 'Montant unitaire', 1, 0, 'C');
+        $pdf->Cell(40, 7, 'Total', 1, 1, 'C');
+
+        $pdf->SetFont('Arial', '', 12);
+        $totalForfait = 0;
+        foreach ($lesFraisForfait as $frais) {
+            $quantite = $frais['quantite'];
+            $montantUnitaire = $this->getMontantUnitaire($frais['idfrais']);
+            $total = $quantite * $montantUnitaire;
+            $totalForfait += $total;
+
+            $pdf->Cell(70, 7,  mb_convert_encoding($frais['libelle'], 'ISO-8859-1', 'UTF-8'), 1);
+            $pdf->Cell(30, 7, $quantite, 1, 0, 'R');
+            $pdf->Cell(40, 7, number_format($montantUnitaire, 2, ',', ' '), 1, 0, 'R');
+            $pdf->Cell(40, 7, number_format($total, 2, ',', ' '), 1, 1, 'R');
+        }
+
+        $pdf->Ln(5);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(40, 7, 'Date', 1, 0, 'C');
+        $pdf->Cell(100, 7, mb_convert_encoding('Libellé', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
+        $pdf->Cell(40, 7, 'Montant', 1, 1, 'C');
+
+        $pdf->SetFont('Arial', '', 12);
+        $totalHorsForfait = 0;
+        foreach ($lesFraisHorsForfait as $frais) {
+            $totalHorsForfait += $frais['montant'];
+
+            $pdf->Cell(40, 7, $frais['date'], 1);
+            $pdf->Cell(100, 7, mb_convert_encoding($frais['libelle'], 'ISO-8859-1', 'UTF-8'), 1);
+            $pdf->Cell(40, 7, number_format($frais['montant'], 2, ',', ' '), 1, 1, 'R');
+        }
+
+        $pdf->Ln(5);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(150, 7, 'TOTAL ' . substr($mois, 4, 2) . '/' . substr($mois, 0, 4), 1);
+        $pdf->Cell(40, 7, number_format($totalForfait + $totalHorsForfait, 2, ',', ' '), 1, 1, 'R');
+
+        $pdfContent = $pdf->Output('S');
+
+        $requetePrepare = $this->connexion->prepare(
+            'INSERT INTO pdf_reports (id_visiteur, mois, pdf_content) VALUES (:idVisiteur, :mois, :pdfContent)'
+        );
+        $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':pdfContent', $pdfContent, PDO::PARAM_LOB);
+        $requetePrepare->execute();
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="RapportFrais.pdf"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . strlen($pdfContent));
+        echo $pdfContent;
+        exit;
+    }
+
+
 }

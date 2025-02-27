@@ -63,6 +63,4 @@ $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
 if ($_SESSION['typeUtilisateur'] == 'visiteur') {
     require PATH_VIEWS . 'v_listeFraisForfait.php';
     require PATH_VIEWS . 'v_listeFraisHorsForfait.php';
-} elseif($_SESSION['typeUtilisateur'] == 'comptable') {
-    require PATH_VIEWS . 'v_validationFicheFraisComptable.php';
 }
