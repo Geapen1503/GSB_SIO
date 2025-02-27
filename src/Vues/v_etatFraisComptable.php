@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
 ?>
 <div class="form-section">
     <h3>Frais Forfaitisés</h3>
@@ -19,33 +21,53 @@
             <th>Date</th>
             <th>Libellé</th>
             <th>Montant</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <?php foreach ($lesFraisHorsForfait as $fraisHors) : ?>
             <tr>
-                <td class="date">
-                    <input type="text" name="dateFrais[<?php echo htmlspecialchars($fraisHors['date']); ?>]" value="<?php echo htmlspecialchars($fraisHors['date']); ?>" class="form-control">
-                </td>
-                <td class="libelle">
-                    <input type="text" name="libelleFrais[<?php echo htmlspecialchars($fraisHors['libelle']); ?>]" value="<?php echo htmlspecialchars($fraisHors['libelle']); ?>" class="form-control">
-                </td>
-                <td class="montant">
-                    <input type="text" name="montantFrais[<?php echo htmlspecialchars($fraisHors['montant']); ?>]" value="<?php echo htmlspecialchars($fraisHors['montant']); ?>" class="form-control">
-                </td>
-                <td class="action">
-                    <button class="btn btn-success btn-sm" type="button">Corriger</button>
-                    <button class="btn btn-danger btn-sm" type="button">Réinitialiser</button>
-                </td>
+                <form method="POST" action="index.php?uc=gererFraisComptable&action=corrigerFraisHorsForfait">
+                    <td class="date">
+                        <?php $dateFraisFormattee = !empty($fraisHors['date']) ? date('Y-m-d', strtotime($fraisHors['date'])) : '1970-01-01'; ?>
+                        <input type="date" name="dateFrais" value="<?php echo htmlspecialchars($dateFraisFormattee); ?>" class="form-control">
+                    </td>
+                    <td class="libelle">
+                        <input type="text" name="libelleFrais" value="<?php echo htmlspecialchars($fraisHors['libelle']); ?>" class="form-control">
+                    </td>
+                    <td class="montant">
+                        <input type="text" name="montantFrais" value="<?php echo htmlspecialchars($fraisHors['montant']); ?>" class="form-control">
+                    </td>
+                    <td class="actions">
+                        <input type="hidden" name="idFrais" value="<?php echo $fraisHors['id']; ?>">
+                        <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+                        <input type="hidden" name="mois" value="<?php echo htmlspecialchars($mois); ?>">
+
+                        <button class="btn btn-warning btn-sm" type="submit">Corriger</button>
+                    </td>
+                </form>
+
+                <form method="POST" action="index.php?uc=gererFraisComptable&action=reinitialiserFrais">
+                    <td class="actions">
+                        <input type="hidden" name="idFrais" value="<?php echo $fraisHors['id']; ?>">
+                        <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+                        <input type="hidden" name="mois" value="<?php echo htmlspecialchars($mois); ?>">
+
+                        <button class="btn btn-danger btn-sm" type="submit">Réinitialiser</button>
+                    </td>
+                </form>
             </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
+    <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
+        <input type="hidden" name="mois" value="<?php echo htmlspecialchars($mois); ?>">
+    </form>
 
     <form method="POST" action="index.php?uc=gererFraisComptable&action=genererPDF">
         <input type="hidden" name="visiteur" value="<?php echo htmlspecialchars($visiteurLogin); ?>">
         <input type="hidden" name="mois" value="<?php echo htmlspecialchars($mois); ?>">
         <button type="submit" class="btn btn-primary">Générer le PDF</button>
     </form>
-
 </div>
+

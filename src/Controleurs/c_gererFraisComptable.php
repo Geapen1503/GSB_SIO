@@ -7,7 +7,7 @@ $mois = Utilitaires::getMois(date('d/m/Y'));
 $numAnnee = substr($mois, 0, 4);
 $numMois = substr($mois, 4, 2);
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$idVisiteur = $_SESSION['idVisiteur'];
+//$idVisiteur = $_SESSION['idVisiteur'];
 switch ($action) {
     case 'afficherVisiteurs':
         $visiteurs = $pdo->getAllVisiteur();
@@ -57,12 +57,30 @@ switch ($action) {
             include PATH_VIEWS .'v_etatFraisComptable.php';
         }
         break;
-    case 'reinitialiserFrais':
-        if (isset($_POST['visiteur'], $_POST['mois'])) {
+    case 'corrigerFraisHorsForfait':
+        if (isset($_POST['idFrais'], $_POST['visiteur'], $_POST['mois'], $_POST['dateFrais'], $_POST['libelleFrais'], $_POST['montantFrais'])) {
+            $idFrais = $_POST['idFrais'];
             $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
             $mois = $_POST['mois'];
+            $dateFrais = $_POST['dateFrais'];
+            $libelleFrais = $_POST['libelleFrais'];
+            $montantFrais = $_POST['montantFrais'];
 
-            $pdo->resetLesFraisForfait($visiteurId, $mois);
+            $pdo->updateFraisHorsForfait($idFrais, $visiteurId, $mois, $dateFrais, $libelleFrais, $montantFrais);
+
+            $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
+            $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
+
+            include PATH_VIEWS .'v_etatFraisComptable.php';
+        }
+        break;
+    case 'reinitialiserFrais':
+        if (isset($_POST['visiteur'], $_POST['mois'], $_POST['idFrais'])) {
+            $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
+            $mois = $_POST['mois'];
+            $idFrais = $_POST['idFrais'];
+
+            $pdo->resetUnFraisHorsForfait($visiteurId, $mois, $idFrais);
 
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
