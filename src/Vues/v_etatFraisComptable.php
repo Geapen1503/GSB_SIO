@@ -29,7 +29,18 @@ ini_set('display_errors', 0);
             <tr>
                 <form method="POST" action="index.php?uc=gererFraisComptable&action=corrigerFraisHorsForfait">
                     <td class="date">
-                        <?php $dateFraisFormattee = !empty($fraisHors['date']) ? date('Y-m-d', strtotime($fraisHors['date'])) : '1970-01-01'; ?>
+                        <?php
+                        $dateFraisFormattee = '1970-01-01';
+                        if (!empty($fraisHors['date'])) {
+                            $dateObj = DateTime::createFromFormat('Y-m-d', $fraisHors['date']);
+                            if ($dateObj) {
+                                $dateFraisFormattee = $dateObj->format('Y-m-d');
+                            } else {
+                                $dateObj = DateTime::createFromFormat('d/m/Y', $fraisHors['date']);
+                                if ($dateObj) $dateFraisFormattee = $dateObj->format('Y-m-d');
+                            }
+                        }
+                        ?>
                         <input type="date" name="dateFrais" value="<?php echo htmlspecialchars($dateFraisFormattee); ?>" class="form-control">
                     </td>
                     <td class="libelle">

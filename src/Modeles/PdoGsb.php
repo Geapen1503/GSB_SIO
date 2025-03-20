@@ -440,25 +440,29 @@ class PdoGsb
      */
     public function resetUnFraisHorsForfait($idVisiteur, $mois, $idFrais): void {
         $requeteSQL = 'UPDATE lignefraishorsforfait 
-                   SET libelle = "rien", 
-                       date = "1970-01-01",  -- Date par défaut au lieu de NULL
-                       montant = 0.00 
-                   WHERE idvisiteur = :idVisiteur 
-                     AND mois = :mois
-                     AND id = :idFrais';
+                   SET libelle = ancien_libelle, 
+                       date = ancien_date, 
+                       montant = ancien_montant
+                   WHERE id = :idFrais 
+                     AND idvisiteur = :idVisiteur 
+                     AND mois = :mois';
 
         $requetePrepare = $this->connexion->prepare($requeteSQL);
+        $requetePrepare->bindParam(':idFrais', $idFrais, PDO::PARAM_INT);
         $requetePrepare->bindParam(':idVisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->bindParam(':mois', $mois, PDO::PARAM_STR);
-        $requetePrepare->bindParam(':idFrais', $idFrais, PDO::PARAM_INT);
         $requetePrepare->execute();
     }
 
 
+
     public function updateFraisHorsForfait($idFrais, $idVisiteur, $mois, $date, $libelle, $montant): void {
         $requeteSQL = 'UPDATE lignefraishorsforfait 
-                   SET date = :date, 
+                   SET ancien_libelle = libelle, 
+                       ancien_date = date, 
+                       ancien_montant = montant, 
                        libelle = :libelle, 
+                       date = :date, 
                        montant = :montant 
                    WHERE id = :idFrais 
                      AND idvisiteur = :idVisiteur 
@@ -471,13 +475,9 @@ class PdoGsb
         $requetePrepare->bindParam(':date', $date, PDO::PARAM_STR);
         $requetePrepare->bindParam(':libelle', $libelle, PDO::PARAM_STR);
         $requetePrepare->bindParam(':montant', $montant, PDO::PARAM_STR);
-
-        try {
-            $requetePrepare->execute();
-        } catch (PDOException $e) {
-            throw new Exception("Erreur lors de la mise à jour des frais hors forfait : " . $e->getMessage());
-        }
+        $requetePrepare->execute();
     }
+
 
 
 
