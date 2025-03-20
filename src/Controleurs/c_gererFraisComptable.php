@@ -60,20 +60,27 @@ switch ($action) {
     case 'corrigerFraisHorsForfait':
         if (isset($_POST['idFrais'], $_POST['visiteur'], $_POST['mois'], $_POST['dateFrais'], $_POST['libelleFrais'], $_POST['montantFrais'])) {
             $idFrais = $_POST['idFrais'];
-            $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
+            $visiteurLogin = $_POST['visiteur'];
+            $visiteurId = $pdo->getVisiteurId($visiteurLogin);
             $mois = $_POST['mois'];
             $dateFrais = $_POST['dateFrais'];
             $libelleFrais = $_POST['libelleFrais'];
             $montantFrais = $_POST['montantFrais'];
+
+            if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $dateFrais)) {
+                $dateObj = DateTime::createFromFormat('d/m/Y', $dateFrais);
+                $dateFrais = $dateObj->format('Y-m-d');
+            }
 
             $pdo->updateFraisHorsForfait($idFrais, $visiteurId, $mois, $dateFrais, $libelleFrais, $montantFrais);
 
             $lesFraisForfait = $pdo->getLesFraisForfait($visiteurId, $mois);
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($visiteurId, $mois);
 
-            include PATH_VIEWS .'v_etatFraisComptable.php';
+            include PATH_VIEWS . 'v_etatFraisComptable.php';
         }
         break;
+
     case 'reinitialiserFrais':
         if (isset($_POST['visiteur'], $_POST['mois'], $_POST['idFrais'])) {
             $visiteurId = $pdo->getVisiteurId($_POST['visiteur']);
