@@ -26,23 +26,31 @@ abstract class Utilitaires
      */
     public static function estConnecte(): bool
     {
-        return isset($_SESSION['idVisiteur']);
+        return isset($_SESSION['id']);
     }
 
     /**
      * Enregistre dans une variable session les infos d'un visiteur
      *
-     * @param String $idVisiteur ID du visiteur
-     * @param String $nom        Nom du visiteur
-     * @param String $prenom     Prénom du visiteur
+     * @param String $id         ID du visiteur ou du comptable
+     * @param String $nom        Nom du visiteur ou du comptable
+     * @param String $prenom     Prénom du visiteur ou du comptable
      *
      * @return null
      */
-    public static function connecter($idVisiteur, $nom, $prenom): void
+    public static function connecter($id, $nom, $prenom)
     {
-        $_SESSION['idVisiteur'] = $idVisiteur;
+        $_SESSION['id'] = $id;
         $_SESSION['nom'] = $nom;
         $_SESSION['prenom'] = $prenom;
+    }
+
+    public static function verifierAccesComptable(): void
+    {
+        if (!isset($_SESSION['type_utilisateur']) || $_SESSION['type_utilisateur'] !== 'comptable') {
+            header('Location: index.php?uc=erreurAcces');
+            exit();
+        }
     }
 
     /**
@@ -187,6 +195,10 @@ abstract class Utilitaires
         return self::estTableauEntiers($lesFrais);
     }
 
+    public static function connecterA2f($code)
+{
+    $_SESSION['codeA2f'] = $code;
+}
     /**
      * Vérifie la validité des trois arguments : la date, le libellé du frais
      * et le montant

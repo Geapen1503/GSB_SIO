@@ -1,0 +1,97 @@
+.panel-primary > .panel-heading {
+    background-color: #ff8800;
+    border-color: #ff8800;
+    color: white;
+}
+
+.panel-primary {
+    border-color: #ff8800;
+}
+
+.row {
+    margin-left: 0px;
+}
+
+.btn-primary {
+    color: white;
+    background-color: #ff8800;
+    border-color: #ff8800;
+}
+.btn-primary:hover {
+    color: white;
+    background-color: #ff8800;
+    border-color: black;
+}
+
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    color: white !important;
+    background-color: #ff8800 !important;
+    border-color: black !important;
+    box-shadow: none !important;
+}
+
+.nav-pills > li > a {
+    background-color: white;
+    color: #ff8800;
+}
+
+.nav-pills > li.active > a {
+    background-color: #ff8800;
+    color: white;
+}
+.nav-pills > li.active > a:hover {
+    background-color: #f0ad4e; /* Fond d'une couleur légèrement différente sur hover */
+    color: white; /* Texte blanc sur hover */
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
+    gap: 5px; /* Espacement uniforme entre les numéros */
+    padding: 1em 0;
+    margin: 0 auto; /* Centre la pagination */
+    max-width: 100%; /* Empêche le débordement */
+    overflow-x: hidden; /* Cache tout dépassement horizontal */
+}
+
+
+.page-item {
+    flex: 0; /* Chaque élément prend seulement la place dont il a besoin */
+}
+
+.page-link {
+    display: inline-block;
+    text-decoration: none;
+    color: #007bff;
+    padding: 5px 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    white-space: nowrap; /* Empêche les retours à la ligne à l'intérieur des numéros */
+    box-sizing: border-box; /* Assure que les bordures sont incluses dans les dimensions */
+    max-width: fit-content; /* Ajuste la taille à son contenu */
+}
+
+.pagination-container {
+    max-width: 100%; /* Limite la largeur */
+    overflow: hidden; /* Évite tout débordement */
+    margin: 0 auto; /* Centre la pagination horizontalement */
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+    color: #0056b3;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* Réduction de la largeur maximale de pagination */
+.pagination {
+    max-width: fit-content;
+}

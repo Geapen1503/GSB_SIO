@@ -30,9 +30,10 @@ require PATH_VIEWS . 'v_entete.php';
 
 $uc = filter_input(INPUT_GET, 'uc', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-if ($uc && !$estConnecte) {
+if ($uc && !$estConnecte && $uc !== 'hashMdp') {
     $uc = 'connexion';
-} elseif (empty($uc)) {
+}
+ elseif (empty($uc)) {
     $uc = 'accueil';
 }
 
@@ -46,14 +47,26 @@ switch ($uc) {
     case 'gererFrais':
         include PATH_CTRLS . 'c_gererFrais.php';
         break;
-    case 'gererFraisComptable':
-        include PATH_CTRLS . 'c_gererFraisComptable.php';
-        break;
     case 'etatFrais':
         include PATH_CTRLS . 'c_etatFrais.php';
         break;
+    case 'telechargerPdf':
+        include PATH_CTRLS . 'generatedPdf.php';
+        break;
+    case 'hashMdp':
+        include PATH_CTRLS . 'hash_mdps.php';
+        break;
+    case 'validerFrais':
+        include PATH_CTRLS . 'c_validerFrais.php';
+        break;
+    case 'suivrePaiement':
+        include PATH_CTRLS . 'c_suivrePaiement.php';
+        break;
     case 'deconnexion':
         include PATH_CTRLS . 'c_deconnexion.php';
+        break;
+    case 'erreurAcces':
+        include PATH_VIEWS . 'v_erreurAcces.php';
         break;
     default:
         Utilitaires::ajouterErreur('Page non trouvée, veuillez vérifier votre lien...');
