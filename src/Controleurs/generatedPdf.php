@@ -1,6 +1,6 @@
 <?php
 ob_clean();
-require_once __DIR__ . '/../../vendor/fpdf/fpdf.php';
+require_once __DIR__ . '/../../fpdf/fpdf.php';
 require_once __DIR__ . '/../Modeles/PdoGsb.php';
 
 use Modeles\PdoGsb;
