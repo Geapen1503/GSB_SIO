@@ -73,4 +73,12 @@
         }
         ?>
     </table>
+    
+
 </div>
+
+
+<a href="index.php?uc=telechargerPdf&id=<?= $idVisiteur ?>&mois=<?= $leMois ?>" 
+   class="btn btn-success">
+   Télécharger la fiche de frais (PDF)
+</a>

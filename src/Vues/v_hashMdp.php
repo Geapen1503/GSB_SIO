@@ -1,4 +1,3 @@
-
 <div class="container" style="margin-top: 3rem;">
     <h2>🔐 Hachage des mots de passe</h2>
     <p>Appuie sur le bouton ci-dessous pour hacher tous les mots de passe des visiteurs avec <code>password_hash()</code>.</p>
